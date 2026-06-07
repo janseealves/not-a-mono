@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# not-a-mono
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web do [**not-a-monolith**](https://github.com/janseealves/not-a-monolith) — o frontend onde o **MONO** ganha corpo, voz e uma laje articulada.
 
-Currently, two official plugins are available:
+> MONO é o superintendente que *parece um monolito, mas é modular*. Em repouso, um bloco coeso; em trabalho, a laje dobra nas juntas — como o TARS reconfigurando o próprio corpo.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## O que é
 
-## React Compiler
+Um cliente React para os módulos do backend `not-a-monolith` (FastAPI). Hoje existe um módulo:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **RAG** — ingestão de URLs, busca semântica e perguntas com resposta fundamentada nos chunks recuperados. A UI tem um painel de chat e um *inspector* que mostra exatamente o que foi recuperado (chunks, scores, top-k).
 
-## Expanding the ESLint configuration
+Novos módulos do backend (OCR, agents...) entram como novas rotas em `src/router.tsx` quando existirem.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| | |
+|---|---|
+| Framework | React 19 + TypeScript |
+| Build | Vite 8 |
+| Estilo | Tailwind CSS 4 |
+| Dados | TanStack Query 5 |
+| Rotas | React Router 7 |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Rodando
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Pré-requisito: o backend [`not-a-monolith`](https://github.com/janseealves/not-a-monolith) rodando (por padrão em `http://localhost:8000`).
+
+```bash
+cp .env.example .env   # ajuste VITE_API_BASE_URL se necessário
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Outros scripts:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build     # tsc -b + vite build
+npm run lint      # eslint
+npm run preview   # serve o build de produção
 ```
+
+## Estrutura
+
+```
+src/
+├── api/          # cliente HTTP + endpoints (/v1/rag/*, /health)
+├── types/        # espelha os schemas Pydantic do backend
+├── hooks/        # useAsk, useIngest, useSources, useHealth
+├── state/        # estado da conversa
+├── components/
+│   ├── shell/    # app shell, sidebar, navegação por módulo
+│   ├── chat/     # painel de chat, composer, bubbles
+│   ├── inspector/# chunks recuperados, fontes, controle de top-k
+│   └── mono/     # o slab animado do MONO e seus estados
+├── voice/        # a voz do MONO (seco, preciso, levemente afiado)
+└── pages/        # uma página por módulo
+```
+
+A identidade visual completa (paleta, logo, regras de aplicação) vive em [`mono-brand/`](mono-brand/mono-brand-spec.md).
+
+## Como este projeto é desenvolvido
+
+Eu sou desenvolvedor backend. Este frontend está sendo construído em parceria com o [Claude Code](https://claude.com/claude-code) — da arquitetura de componentes ao CSS, passando pela personalidade do MONO. As decisões de produto e a integração com o backend são minhas; boa parte do React idiomático é do Claude. Sem pudor: é assim que se aprende um stack novo em 2026.
