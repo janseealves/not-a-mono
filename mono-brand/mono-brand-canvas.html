@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONO — identidade visual / not-a-monolith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#0B0C0E;
+    --surface:#16181C;
+    --steel:#23262C;
+    --amber:#FFB02E;
+    --ember:#C8740A;
+    --bone:#E7E4DD;
+    --slate:#6B7079;
+    --hair:rgba(231,228,221,.08);
+    --display:'Martian Mono',monospace;
+    --mono:'IBM Plex Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ground);
+    color:var(--bone);
+    font-family:var(--mono);
+    font-weight:300;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* film grain */
+  body::after{
+    content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;
+    opacity:.045;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  ::selection{background:var(--amber);color:var(--ground)}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:0 32px}
+  section{position:relative}
+
+  .label{
+    font-family:var(--mono);font-size:11px;font-weight:500;
+    letter-spacing:.32em;text-transform:uppercase;color:var(--slate);
+  }
+  .label .dot{color:var(--amber)}
+
+  /* ---------- HERO ---------- */
+  .hero{min-height:100vh;display:grid;grid-template-columns:1fr .9fr;
+    align-items:center;gap:40px;padding:120px 0 80px;position:relative}
+  .hero::before{
+    content:"";position:absolute;top:8%;right:-10%;width:600px;height:600px;
+    background:radial-gradient(circle,rgba(255,176,46,.10),transparent 62%);
+    filter:blur(20px);pointer-events:none;z-index:0;
+  }
+  .hero-copy{position:relative;z-index:2}
+  .eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:34px;
+    opacity:0;animation:rise .9s .1s forwards}
+  .eyebrow .line{height:1px;width:48px;background:var(--hair)}
+  .wordmark{font-family:var(--display);font-weight:600;font-size:clamp(58px,11vw,128px);
+    letter-spacing:-.04em;line-height:.86;text-transform:lowercase;
+    opacity:0;animation:rise .9s .25s forwards}
+  .wordmark .bracket{color:var(--amber);font-weight:300}
+  .tag{margin-top:30px;max-width:34ch;color:#b9b6ae;font-size:15px;
+    opacity:0;animation:rise .9s .42s forwards}
+  .tag b{color:var(--bone);font-weight:500}
+  .hero-meta{margin-top:40px;display:flex;gap:32px;
+    opacity:0;animation:rise .9s .58s forwards}
+  .hero-meta div{font-size:12px;color:var(--slate);letter-spacing:.04em}
+  .hero-meta strong{display:block;color:var(--bone);font-weight:500;
+    font-family:var(--display);font-size:13px;letter-spacing:0;margin-top:6px}
+
+  /* ---------- THE SLAB ---------- */
+  .stage{position:relative;z-index:2;display:flex;flex-direction:column;
+    align-items:center;gap:30px;opacity:0;animation:rise 1s .4s forwards}
+  .badge{
+    position:relative;width:300px;height:300px;border-radius:22%;
+    background:var(--amber);cursor:grab;touch-action:none;overflow:hidden;
+    box-shadow:0 40px 90px rgba(255,176,46,.10),inset 0 0 0 1px rgba(11,12,14,.05);
+  }
+  .badge:active{cursor:grabbing}
+  .seg{position:absolute;left:0;top:0;background:#0A0B0D;transform-origin:50% 0;will-change:transform}
+
+  .console{display:flex;flex-direction:column;gap:14px;width:280px}
+  .readout{display:flex;justify-content:space-between;font-size:11px;
+    letter-spacing:.18em;text-transform:uppercase}
+  .readout .k{color:var(--slate)}
+  .readout .v{color:var(--amber);font-family:var(--display);font-weight:500}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;
+    background:var(--steel);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:22px;border-radius:2px;background:var(--amber);
+    box-shadow:0 0 12px rgba(255,176,46,.5);cursor:grab}
+  input[type=range]::-moz-range-thumb{width:14px;height:22px;border:none;border-radius:2px;
+    background:var(--amber);box-shadow:0 0 12px rgba(255,176,46,.5);cursor:grab}
+  .scale{display:flex;justify-content:space-between;font-size:10px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--slate)}
+
+  /* ---------- generic section header ---------- */
+  .shead{display:flex;align-items:baseline;gap:18px;margin-bottom:48px}
+  .shead h2{font-family:var(--display);font-weight:500;font-size:clamp(26px,4vw,42px);
+    letter-spacing:-.03em;text-transform:lowercase}
+  .shead .num{font-family:var(--display);font-size:13px;color:var(--amber);font-weight:500}
+  .divider{height:1px;background:var(--hair);margin:0}
+  .block{padding:120px 0}
+
+  /* ---------- THESIS ---------- */
+  .thesis p{font-family:var(--display);font-weight:300;
+    font-size:clamp(22px,3.4vw,38px);line-height:1.35;letter-spacing:-.02em;
+    max-width:20ch}
+  .thesis .strike{color:var(--slate);text-decoration:line-through;text-decoration-color:var(--ember)}
+  .thesis .hit{color:var(--amber)}
+  .thesis .foot{font-family:var(--mono);font-size:14px;color:#b9b6ae;
+    margin-top:40px;max-width:52ch;line-height:1.7}
+
+  /* ---------- WORDMARK SPECIMEN ---------- */
+  .wm-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);
+    border:1px solid var(--hair)}
+  .wm-cell{background:var(--ground);padding:44px;display:flex;flex-direction:column;
+    justify-content:space-between;min-height:200px}
+  .wm-cell.invert{background:var(--bone);color:var(--ground)}
+  .wm-cell.amber{background:var(--amber);color:var(--ground)}
+  .wm-cell .mk{font-family:var(--display);font-weight:600;font-size:46px;
+    letter-spacing:-.04em;text-transform:lowercase}
+  .wm-cell .mk .bracket{font-weight:300;opacity:.75}
+  .wm-cell .cap{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.6}
+  .wm-cell.lockup .lk{font-family:var(--display);font-size:13px;letter-spacing:-.01em;
+    line-height:1.5}
+  .wm-cell.lockup .lk span{color:var(--amber)}
+
+  /* ---------- PALETTE ---------- */
+  .palette{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--hair);border:1px solid var(--hair)}
+  .sw{padding:24px 22px;min-height:170px;display:flex;flex-direction:column;
+    justify-content:flex-end;gap:3px;position:relative}
+  .sw .role{font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.65}
+  .sw .name{font-family:var(--display);font-weight:500;font-size:16px}
+  .sw .hex{font-size:12px;opacity:.7;letter-spacing:.06em}
+  .sw.dark{color:var(--bone)} .sw.light{color:var(--ground)}
+  .sw .pin{position:absolute;top:20px;left:22px;font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;opacity:.5}
+
+  /* ---------- TYPE ---------- */
+  .type-row{display:grid;grid-template-columns:200px 1fr;gap:40px;padding:40px 0;
+    border-top:1px solid var(--hair);align-items:start}
+  .type-row .meta .fn{font-family:var(--display);font-weight:600;font-size:22px}
+  .type-row .meta .use{font-size:12px;color:var(--slate);letter-spacing:.04em;margin-top:8px}
+  .type-row .meta .wts{font-size:11px;color:var(--slate);margin-top:18px;letter-spacing:.1em}
+  .specimen .big{font-family:var(--display);font-size:54px;letter-spacing:-.03em;line-height:1}
+  .specimen .big.plex{font-family:var(--mono)}
+  .specimen .small{margin-top:18px;color:#b9b6ae;font-size:14px;max-width:50ch}
+  .specimen .small.plex{font-family:var(--mono)}
+  .glyphs{margin-top:16px;color:var(--slate);font-size:18px;letter-spacing:.15em}
+
+  /* ---------- VOICE ---------- */
+  .voice-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center}
+  .dials{display:flex;flex-direction:column;gap:30px}
+  .dial .readout{margin-bottom:10px}
+  .speech{background:var(--surface);border:1px solid var(--hair);border-radius:3px;
+    padding:36px;position:relative;min-height:200px;display:flex;flex-direction:column;gap:18px}
+  .speech::before{content:"MONO";position:absolute;top:18px;right:22px;
+    font-family:var(--display);font-size:11px;letter-spacing:.2em;color:var(--amber)}
+  .speech .who{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--slate)}
+  .speech .line{font-family:var(--display);font-weight:300;font-size:19px;line-height:1.45;
+    letter-spacing:-.01em;transition:opacity .2s}
+  .speech .cursor{display:inline-block;width:9px;height:19px;background:var(--amber);
+    margin-left:4px;vertical-align:-3px;animation:blink 1.05s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ---------- AT WORK ---------- */
+  .graph{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative}
+  .node{background:var(--surface);border:1px solid var(--hair);border-radius:3px;
+    padding:20px 18px;position:relative}
+  .node .stage-n{font-family:var(--display);font-size:11px;color:var(--amber);
+    letter-spacing:.14em}
+  .node .stage-t{font-family:var(--display);font-weight:500;font-size:16px;margin-top:10px}
+  .node .stage-d{font-size:12px;color:var(--slate);margin-top:8px;line-height:1.5}
+  .node:not(:last-child)::after{content:"→";position:absolute;right:-12px;top:50%;
+    transform:translateY(-50%);color:var(--ember);font-size:14px;z-index:2}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:90px 0 70px;border-top:1px solid var(--hair)}
+  .foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}
+  .foot-mark{font-family:var(--display);font-weight:600;font-size:40px;letter-spacing:-.04em;
+    text-transform:lowercase}
+  .foot-mark .bracket{color:var(--amber);font-weight:300}
+  .foot-note{font-size:13px;color:var(--slate);line-height:1.7;max-width:46ch}
+  .foot-note b{color:var(--bone);font-weight:500}
+
+  @keyframes rise{to{opacity:1;transform:none}}
+  .eyebrow,.wordmark,.tag,.hero-meta,.stage{transform:translateY(18px)}
+
+  @media(max-width:860px){
+    .hero{grid-template-columns:1fr;gap:60px;text-align:left}
+    .stage{order:-1}
+    .wm-grid,.voice-grid,.foot-grid{grid-template-columns:1fr}
+    .palette{grid-template-columns:repeat(2,1fr)}
+    .graph{grid-template-columns:1fr;gap:26px}
+    .node:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-20px;transform:translateX(-50%)}
+    .type-row{grid-template-columns:1fr;gap:18px}
+    .block{padding:80px 0}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero wrap">
+  <div class="hero-copy">
+    <div class="eyebrow">
+      <span class="label">a persona do agente</span>
+      <span class="line"></span>
+      <span class="label">not<span style="color:var(--amber)">-</span>a<span style="color:var(--amber)">-</span>monolith</span>
+    </div>
+    <h1 class="wordmark"><span class="bracket">[</span>mono<span class="bracket">]</span></h1>
+    <p class="tag">Parece um monolito. <b>É modular.</b> MONO é o superintendente que orquestra os workflows — um bloco só por fora, muitos por dentro.</p>
+    <div class="hero-meta">
+      <div>arquétipo<strong>o superintendente</strong></div>
+      <div>referência<strong>TARS · 2001</strong></div>
+      <div>motor<strong>langgraph</strong></div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="badge" id="badge">
+      <div class="seg"></div>
+      <div class="seg"></div>
+      <div class="seg"></div>
+      <div class="seg"></div>
+    </div>
+    <div class="console">
+      <div class="readout"><span class="k">estado</span><span class="v" id="state">monolito</span></div>
+      <input type="range" id="art" min="0" max="100" value="0">
+      <div class="scale"><span>coeso</span><span>articulado</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider wrap" style="max-width:1036px"></div>
+
+<!-- THESIS -->
+<section class="block wrap thesis">
+  <div class="shead"><span class="num">01</span><h2>a tese, em um gesto</h2></div>
+  <p>uma forma <span class="strike">indivisível</span> <span class="hit">articulável</span>.</p>
+  <p class="foot">O slab é o logo e a explicação ao mesmo tempo. Em repouso, ele é uma laje sólida — só costuras finíssimas denunciando que há algo lá dentro. Quando trabalha, a laje dobra nas juntas — os segmentos giram em ângulos alternados e formam o zigue-zague articulado, como o TARS reconfigurando o próprio corpo. É a piada do <em>not-a-monolith</em> virada matéria.</p>
+</section>
+
+<div class="divider wrap" style="max-width:1036px"></div>
+
+<!-- WORDMARK -->
+<section class="block wrap">
+  <div class="shead"><span class="num">02</span><h2>wordmark</h2></div>
+  <div class="wm-grid">
+    <div class="wm-cell">
+      <span class="cap">primária · sobre obsidiana</span>
+      <span class="mk"><span class="bracket">[</span>mono<span class="bracket">]</span></span>
+    </div>
+    <div class="wm-cell invert">
+      <span class="cap">invertida · sobre osso</span>
+      <span class="mk"><span class="bracket">[</span>mono<span class="bracket">]</span></span>
+    </div>
+    <div class="wm-cell amber">
+      <span class="cap">sinal · sobre âmbar</span>
+      <span class="mk">[mono]</span>
+    </div>
+    <div class="wm-cell lockup">
+      <span class="cap">lockup com o projeto</span>
+      <span class="lk"><span>[mono]</span> &nbsp;·&nbsp; um agente de<br>not<span style="color:var(--amber)">-</span>a<span style="color:var(--amber)">-</span>monolith</span>
+    </div>
+  </div>
+  <p style="margin-top:28px;font-size:13px;color:var(--slate);max-width:60ch;line-height:1.7">
+    All-lowercase, Martian&nbsp;Mono 600. Os colchetes não são decoração: são o array de um só elemento — <code style="color:var(--amber)">[mono]</code> — a lista que finge ser singular. Em monocromático eles somem para o peso 300; o nome carrega sozinho.
+  </p>
+</section>
+
+<div class="divider wrap" style="max-width:1036px"></div>
+
+<!-- PALETTE -->
+<section class="block wrap">
+  <div class="shead"><span class="num">03</span><h2>paleta</h2></div>
+  <div class="palette">
+    <div class="sw dark" style="background:#0B0C0E"><span class="pin">ground</span><span class="role">fundo</span><span class="name">obsidiana</span><span class="hex">#0B0C0E</span></div>
+    <div class="sw dark" style="background:#16181C"><span class="pin">surface</span><span class="role">superfície</span><span class="name">grafite</span><span class="hex">#16181C</span></div>
+    <div class="sw dark" style="background:#23262C"><span class="pin">surface-2</span><span class="role">relevo</span><span class="name">aço</span><span class="hex">#23262C</span></div>
+    <div class="sw light" style="background:#FFB02E"><span class="pin">accent</span><span class="role">o sinal</span><span class="name">âmbar</span><span class="hex">#FFB02E</span></div>
+    <div class="sw light" style="background:#C8740A"><span class="pin">accent-deep</span><span class="role">profundidade</span><span class="name">brasa</span><span class="hex">#C8740A</span></div>
+    <div class="sw light" style="background:#E7E4DD"><span class="pin">text</span><span class="role">texto</span><span class="name">osso</span><span class="hex">#E7E4DD</span></div>
+    <div class="sw dark" style="background:#3A3E45"><span class="pin">text-muted</span><span class="role">secundário</span><span class="name">ardósia</span><span class="hex">#6B7079</span></div>
+    <div class="sw dark" style="background:#0B0C0E;border:1px solid var(--hair)"><span class="pin">regra</span><span class="role" style="color:var(--amber)">disciplina</span><span class="name" style="font-size:13px;line-height:1.4">grafite + 1 âmbar.<br>nada mais brilha.</span></div>
+  </div>
+</section>
+
+<div class="divider wrap" style="max-width:1036px"></div>
+
+<!-- TYPE -->
+<section class="block wrap">
+  <div class="shead"><span class="num">04</span><h2>tipografia</h2></div>
+  <div class="type-row">
+    <div class="meta">
+      <div class="fn">Martian Mono</div>
+      <div class="use">display · wordmark · números</div>
+      <div class="wts">300 / 400 / 500 / 600 / 700</div>
+    </div>
+    <div class="specimen">
+      <div class="big">monolito modular</div>
+      <div class="small">Letras arquitetônicas, quase tijolos. Empilham como o próprio slab — é a tipografia virar estrutura.</div>
+      <div class="glyphs">[ ] { } &lt; / &gt; 0 1 2 → ·</div>
+    </div>
+  </div>
+  <div class="type-row">
+    <div class="meta">
+      <div class="fn">IBM Plex Mono</div>
+      <div class="use">corpo · rótulos · console</div>
+      <div class="wts">300 / 400 / 500 / 600</div>
+    </div>
+    <div class="specimen">
+      <div class="big plex">readout & logs</div>
+      <div class="small plex">Legível em blocos longos, nativo de terminal. Carrega a voz operacional do MONO sem cansar — o âmbar é só pra ênfase, nunca pro parágrafo.</div>
+      <div class="glyphs">retrieval · embed · rerank · 0.42s</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider wrap" style="max-width:1036px"></div>
+
+<!-- VOICE -->
+<section class="block wrap">
+  <div class="shead"><span class="num">05</span><h2>voz</h2></div>
+  <div class="voice-grid">
+    <div class="dials">
+      <p style="font-size:13px;color:var(--slate);max-width:34ch;line-height:1.7;margin-bottom:6px">
+        O TARS tinha humor e honestidade ajustáveis. O MONO também — seco, preciso, levemente afiado. Mexa nos diais:
+      </p>
+      <div class="dial">
+        <div class="readout"><span class="k">humor</span><span class="v" id="humv">60%</span></div>
+        <input type="range" id="hum" min="0" max="100" value="60">
+      </div>
+      <div class="dial">
+        <div class="readout"><span class="k">franqueza</span><span class="v" id="honv">90%</span></div>
+        <input type="range" id="hon" min="0" max="100" value="90">
+      </div>
+    </div>
+    <div class="speech">
+      <span class="who">// resposta</span>
+      <div class="line" id="line">Encontrei. Estava no terceiro documento — sempre está. Recuperação em 0.42s.<span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider wrap" style="max-width:1036px"></div>
+
+<!-- AT WORK -->
+<section class="block wrap">
+  <div class="shead"><span class="num">06</span><h2>mono em trabalho</h2></div>
+  <p style="font-size:14px;color:#b9b6ae;max-width:60ch;line-height:1.7;margin-bottom:42px">
+    O front gira em torno de mostrar o MONO <em>pensando</em>. Cada estágio do grafo dobra uma junta do slab — a UI é a anatomia do monolito se articulando em tempo real.
+  </p>
+  <div class="graph">
+    <div class="node"><div class="stage-n">01</div><div class="stage-t">ingest</div><div class="stage-d">a pergunta entra, é normalizada e roteada pelo grafo.</div></div>
+    <div class="node"><div class="stage-n">02</div><div class="stage-t">retrieve</div><div class="stage-d">RAG busca no índice; rerank fecha os candidatos.</div></div>
+    <div class="node"><div class="stage-n">03</div><div class="stage-t">reason</div><div class="stage-d">os nós do LangGraph deliberam — a junta central dobra.</div></div>
+    <div class="node"><div class="stage-n">04</div><div class="stage-t">respond</div><div class="stage-d">o slab volta ao repouso. uma resposta, na voz do MONO.</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="wrap">
+  <div class="foot-grid">
+    <div class="foot-mark"><span class="bracket">[</span>mono<span class="bracket">]</span></div>
+    <div class="foot-note">
+      <b>MONO</b> é a persona. <b>not-a-monolith</b> é o projeto que arma a piada antes dele entrar em cena. Um existe pro outro fazer sentido — a laje só é engraçada porque o nome já prometeu que ela era inteira.
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const badge = document.getElementById('badge');
+  const segs  = [...badge.querySelectorAll('.seg')];
+  const art   = document.getElementById('art');
+  const state = document.getElementById('state');
+  let idle = true, idleT = 0, raf;
+
+  const S=300, W=S*0.30, H=S*0.142, GAP=S*0.026, THETA=16, DIRS=[-1,1,-1,1];
+  segs.forEach(s=>{ s.style.width=W+'px'; s.style.height=H+'px'; });
+  const cx=S/2;
+  function rot(px,py,ox,oy,deg){const a=deg*Math.PI/180,dx=px-ox,dy=py-oy;
+    return [ox+dx*Math.cos(a)-dy*Math.sin(a), oy+dx*Math.sin(a)+dy*Math.cos(a)];}
+
+  function label(t){ if(t<4)return'monolito'; if(t<35)return'fendendo'; if(t<80)return'articulando'; return'articulado'; }
+
+  function setT(v){
+    const t=v/100, ang=DIRS.map(d=>d*THETA*t);
+    // pass 1: find vertical span to center
+    let P=[cx,0]; const ys=[0];
+    for(const a of ang){ P=rot(P[0],P[1]+H+GAP,P[0],P[1],a); ys.push(P[1]); }
+    const span=Math.max(...ys)-Math.min(...ys), yoff=(S-span)/2-Math.min(...ys);
+    // pass 2: place
+    P=[cx,yoff];
+    for(let i=0;i<4;i++){
+      const a=ang[i];
+      segs[i].style.transform=`translate(${P[0]-W/2}px,${P[1]}px) rotate(${a}deg)`;
+      P=rot(P[0],P[1]+H+GAP,P[0],P[1],a);
+    }
+    state.textContent=label(v);
+  }
+  function loop(){ if(!idle)return; idleT+=0.012;
+    const v=(Math.sin(idleT)*0.5+0.5)*10; setT(v); art.value=v; raf=requestAnimationFrame(loop); }
+  loop();
+  function stopIdle(){ idle=false; cancelAnimationFrame(raf); }
+
+  art.addEventListener('input', e=>{ stopIdle(); setT(+e.target.value); });
+
+  let dragging=false,startY=0,startV=0;
+  function down(e){dragging=true;stopIdle();startY=(e.touches?e.touches[0].clientY:e.clientY);startV=+art.value;}
+  function move(e){if(!dragging)return;e.preventDefault();
+    const y=(e.touches?e.touches[0].clientY:e.clientY);
+    let v=startV+(y-startY)*0.6;v=Math.max(0,Math.min(100,v));art.value=v;setT(v);}
+  function up(){dragging=false;}
+  badge.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+  badge.addEventListener('touchstart',down,{passive:false});window.addEventListener('touchmove',move,{passive:false});window.addEventListener('touchend',up);
+
+  // ---- VOICE matrix ----
+  const hum=document.getElementById('hum'), hon=document.getElementById('hon');
+  const humv=document.getElementById('humv'), honv=document.getElementById('honv');
+  const line=document.getElementById('line');
+  // [honesty level][humor level]
+  const lines = {
+    blunt: [
+      'Consulta recebida. Recuperação concluída em 0.42s. Resposta no documento 3.',
+      'Encontrei. Estava no terceiro documento — sempre está. 0.42s.',
+      'Achei. Você poderia ter feito um grep, mas é pra isso que eu existo.'
+    ],
+    diplomatic: [
+      'A informação solicitada foi localizada e está disponível para revisão.',
+      'Localizei o que precisava — terceiro documento. Avise se quiser que eu detalhe.',
+      'Tudo certo! Já separei a resposta. E sim, reorganizei seu contexto. De nada.'
+    ]
+  };
+  function humorIdx(v){ return v<33?0:(v<70?1:2); }
+  function render(){
+    const h=+hum.value, f=+hon.value;
+    humv.textContent=h+'%'; honv.textContent=f+'%';
+    const tier = f>=55 ? 'blunt' : 'diplomatic'; // high franqueza = blunt
+    line.style.opacity=0;
+    setTimeout(()=>{
+      line.innerHTML = lines[tier][humorIdx(h)] + '<span class="cursor"></span>';
+      line.style.opacity=1;
+    },140);
+  }
+  hum.addEventListener('input',render); hon.addEventListener('input',render);
+})();
+</script>
+</body>
+</html>
