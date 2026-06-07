@@ -1,0 +1,107 @@
+@import 'tailwindcss';
+
+/* ── tokens do mono-brand (mono-brand/mono-brand-spec.md) ── */
+@theme {
+  --color-ground: #0b0c0e; /* obsidiana — fundo da UI */
+  --color-surface: #16181c; /* grafite — cards, painéis */
+  --color-steel: #23262c; /* aço — relevo, trilhos */
+  --color-amber: #ffb02e; /* âmbar — o sinal. escasso. */
+  --color-ember: #c8740a; /* brasa — profundidade, pressed */
+  --color-figure: #0a0b0d; /* preto — a figura do símbolo */
+  --color-bone: #e7e4dd; /* osso — texto primário */
+  --color-slate: #6b7079; /* ardósia — texto secundário */
+  --color-hair: rgba(231, 228, 221, 0.1); /* divisores finos */
+
+  --font-display: 'Martian Mono', monospace;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --radius-card: 3px;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background: var(--color-ground);
+    color: var(--color-bone);
+    font-family: var(--font-mono);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-amber);
+    color: var(--color-ground);
+  }
+
+  /* scrollbar discreta, trilho de aço */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-steel) transparent;
+  }
+}
+
+/* film grain — atmosfera do brandbook */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* cursor âmbar piscante do MONO */
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.mono-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  background: var(--color-amber);
+  margin-left: 4px;
+  vertical-align: -0.15em;
+  animation: blink 1.05s steps(1) infinite;
+}
+
+/* range input no estilo do console do brandbook */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--color-steel);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--color-amber);
+  box-shadow: 0 0 12px rgba(255, 176, 46, 0.5);
+  cursor: grab;
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 12px;
+  height: 18px;
+  border: none;
+  border-radius: 2px;
+  background: var(--color-amber);
+  box-shadow: 0 0 12px rgba(255, 176, 46, 0.5);
+  cursor: grab;
+}
