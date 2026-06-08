@@ -14,6 +14,7 @@ export function useSources() {
     }
   })
 
+  // TODO: limpar fontes ao detectar que o backend reiniciou (e perdeu o índice em memória). 
   const addSource = useCallback((url: string) => {
     setSources((prev) => {
       const next = prev.includes(url) ? prev : [...prev, url]
