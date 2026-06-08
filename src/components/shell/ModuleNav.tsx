@@ -11,9 +11,6 @@ interface Module {
 // Espelha modules/ do not-a-monolith — novos módulos do backend entram aqui.
 const MODULES: Module[] = [
   { slug: 'rag', name: 'rag', active: true },
-  { slug: 'ocr', name: 'ocr', active: false },
-  { slug: 'agents', name: 'agents', active: false },
-  { slug: 'integrations', name: 'integrações', active: false },
 ]
 
 export function ModuleNav() {
