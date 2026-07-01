@@ -1,6 +1,5 @@
 import type { Message } from '../../state/conversation'
 import { MonoBadge } from '../mono/MonoBadge'
-import { RetrievalDetails } from './RetrievalDetails'
 
 interface MessageBubbleProps {
   message: Message
@@ -34,7 +33,7 @@ export function MessageBubble({ message, withCursor }: MessageBubbleProps) {
           {message.text}
           {withCursor && <span className="mono-cursor" />}
         </p>
-        {message.run && <RetrievalDetails run={message.run} />}
+        {/* referências ocultas por enquanto — reativar quando a API tiver GET de document */}
       </div>
     </div>
   )
