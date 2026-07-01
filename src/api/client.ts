@@ -1,4 +1,7 @@
-const BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+// Padrão same-origin: /api é roteado para a VPS pelo proxy (vercel.json em
+// produção, vite server.proxy em dev). Sobrescreva via VITE_API_BASE_URL para
+// apontar direto a um backend (ex.: http://localhost:8000 em desenvolvimento).
+const BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 export class ApiError extends Error {
   /** status HTTP, ou undefined quando a rede falhou (backend fora do ar) */
