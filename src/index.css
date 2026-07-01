@@ -105,3 +105,43 @@ input[type='range']::-moz-range-thumb {
   background: var(--color-amber);
   cursor: grab;
 }
+
+/* barra de progresso indeterminada — shimmer laranja correndo no trilho de aço.
+   usada quando ingest/ask demoram, pra sinalizar que o MONO está trabalhando. */
+@keyframes mono-progress-slide {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.mono-progress {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-steel);
+}
+
+.mono-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 40%;
+  background: var(--color-amber);
+  animation: mono-progress-slide 1.15s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mono-progress::after {
+    left: 0;
+    width: 100%;
+    opacity: 0.5;
+    animation: none;
+  }
+}
