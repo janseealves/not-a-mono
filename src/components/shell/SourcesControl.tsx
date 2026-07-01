@@ -28,7 +28,7 @@ export function SourcesControl({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] transition-colors ${
+        className={`flex items-center gap-1.5 rounded-lg border px-3 py-1 text-[11px] transition-colors ${
           open
             ? 'border-amber text-amber'
             : 'border-hair text-slate hover:border-slate/40 hover:text-bone'
@@ -46,7 +46,7 @@ export function SourcesControl({
             className="fixed inset-0 z-20 cursor-default"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-0 top-full z-30 mt-2 flex w-[280px] flex-col gap-5 rounded-2xl border border-hair bg-surface p-4 shadow-lg shadow-black/5">
+          <div className="absolute right-0 top-full z-30 mt-2 flex w-[280px] flex-col gap-5 rounded-lg border border-hair bg-surface p-4 shadow-lg shadow-black/5">
             <div className="flex flex-col gap-2">
               <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-slate">
                 indexar url

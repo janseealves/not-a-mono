@@ -65,25 +65,27 @@ export function RagPage() {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <header className="sticky top-0 z-10 border-b border-hair bg-ground/70 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2.5">
-            <MonoBadge size={26} />
-            <Wordmark />
-            <span className="text-[11px] lowercase tracking-[0.1em] text-slate">
-              · rag
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <HealthDot online={online} />
-            <SourcesControl
-              topK={topK}
-              onTopKChange={setTopK}
-              sources={sources}
-              online={online}
-              onIngested={addSource}
-            />
+    <div className="relative flex h-full flex-col">
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 pt-3">
+        <div className="mx-auto w-full max-w-3xl px-4">
+          <div className="pointer-events-auto flex items-center justify-between rounded-lg border border-hair bg-surface/80 px-4 py-2.5 shadow-sm shadow-black/5 backdrop-blur-md">
+            <div className="flex items-center gap-2.5">
+              <MonoBadge size={24} />
+              <Wordmark />
+              <span className="text-[11px] lowercase tracking-[0.1em] text-slate">
+                · rag
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <HealthDot online={online} />
+              <SourcesControl
+                topK={topK}
+                onTopKChange={setTopK}
+                sources={sources}
+                online={online}
+                onIngested={addSource}
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -93,7 +95,7 @@ export function RagPage() {
           {empty ? (
             <EmptyState hasSources={sources.length > 0} />
           ) : (
-            <div className="flex flex-1 flex-col gap-7 py-8">
+            <div className="flex flex-1 flex-col gap-7 pb-8 pt-20">
               {messages.map((m) => (
                 <MessageBubble
                   key={m.id}

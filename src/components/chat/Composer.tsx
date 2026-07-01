@@ -17,7 +17,7 @@ export function Composer({ disabled, onSubmit }: ComposerProps) {
 
   return (
     <form
-      className="flex items-end gap-2 rounded-2xl border border-hair bg-surface px-3 py-2.5 shadow-sm shadow-black/5 transition-colors focus-within:border-slate/40"
+      className="flex items-end gap-2 rounded-lg border border-hair bg-surface px-3 py-2.5 shadow-sm shadow-black/5 transition-colors focus-within:border-slate/40"
       onSubmit={(e) => {
         e.preventDefault()
         submit()

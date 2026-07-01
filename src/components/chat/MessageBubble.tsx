@@ -12,7 +12,7 @@ export function MessageBubble({ message, withCursor }: MessageBubbleProps) {
   if (message.role === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md border border-hair bg-surface px-4 py-2.5 text-sm leading-relaxed text-bone">
+        <div className="max-w-[80%] whitespace-pre-wrap rounded-lg rounded-br-sm border border-hair bg-surface px-4 py-2.5 text-sm leading-relaxed text-bone">
           {message.text}
         </div>
       </div>
