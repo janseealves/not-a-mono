@@ -1,14 +1,10 @@
 import { Outlet } from 'react-router-dom'
 
-import { Sidebar } from './Sidebar'
-
+// Casca mínima: cada módulo ocupa a tela inteira e monta o próprio cabeçalho.
 export function AppShell() {
   return (
-    <div className="flex h-full overflow-hidden">
-      <Sidebar />
-      <main className="min-w-0 flex-1">
-        <Outlet />
-      </main>
+    <div className="h-full">
+      <Outlet />
     </div>
   )
 }

@@ -27,14 +27,14 @@ export function ThinkingState() {
   const current = STAGES[stage]
 
   return (
-    <div className="flex items-center gap-3">
-      <MonoBadge size={28} t={t} />
-      <div className="flex flex-col gap-1 pt-0.5">
-        <span className="font-display text-[9px] uppercase tracking-[0.22em] text-slate">
+    <div className="flex gap-3">
+      <MonoBadge size={26} t={t} />
+      <div className="flex flex-col gap-1.5 pt-0.5">
+        <span className="text-[10px] uppercase tracking-[0.22em] text-slate">
           mono · {slabLabel(t)}
         </span>
-        <span className="font-display text-[12px] text-slate">
-          <span className="text-amber">{current.n}</span> {current.name}{' '}
+        <span className="text-[13px] text-slate">
+          <span className="text-amber">{current.name}</span>{' '}
           <span className="text-slate/60">— {current.desc}…</span>
         </span>
       </div>

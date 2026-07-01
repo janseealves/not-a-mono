@@ -1,5 +1,7 @@
 // Conversa em memória — o backend não tem histórico; recarregar limpa.
 
+import type { AskResult } from '../hooks/useAsk'
+
 export type Role = 'user' | 'mono'
 
 export interface Message {
@@ -9,6 +11,8 @@ export interface Message {
   /** linha de readout abaixo da mensagem (latência, top_k) */
   meta?: string
   error?: boolean
+  /** recuperação por trás da resposta — abre no disclosure inline */
+  run?: AskResult
 }
 
 export type ConversationAction = { type: 'push'; message: Message }
