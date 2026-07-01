@@ -1,8 +1,13 @@
-import { useReducer, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { ApiError } from '../api/client'
-import { ChatPanel } from '../components/chat/ChatPanel'
-import { InspectorPanel } from '../components/inspector/InspectorPanel'
+import { Composer } from '../components/chat/Composer'
+import { MessageBubble } from '../components/chat/MessageBubble'
+import { ThinkingState } from '../components/chat/ThinkingState'
+import { MonoBadge } from '../components/mono/MonoBadge'
+import { HealthDot } from '../components/shell/HealthDot'
+import { SourcesControl } from '../components/shell/SourcesControl'
+import { Wordmark } from '../components/shell/Wordmark'
 import { type AskResult, useAsk } from '../hooks/useAsk'
 import { useHealth } from '../hooks/useHealth'
 import { useSources } from '../hooks/useSources'
@@ -12,18 +17,26 @@ import { monoLatency, monoVoice } from '../voice/mono'
 export function RagPage() {
   const [messages, dispatch] = useReducer(conversationReducer, [])
   const [topK, setTopK] = useState(5)
-  const [lastRun, setLastRun] = useState<AskResult | null>(null)
   const { online } = useHealth()
   const { sources, addSource } = useSources()
   const askMutation = useAsk()
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const empty = messages.length === 0 && !askMutation.isPending
+
+  // mantém a conversa colada no fim
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
+  }, [messages, askMutation.isPending])
+
+  const lastMonoId = [...messages].reverse().find((m) => m.role === 'mono')?.id
 
   const handleAsk = (query: string) => {
     dispatch({ type: 'push', message: { id: messageId(), role: 'user', text: query } })
     askMutation.mutate(
       { query, topK },
       {
-        onSuccess: (result) => {
-          setLastRun(result)
+        onSuccess: (result: AskResult) => {
           dispatch({
             type: 'push',
             message: {
@@ -31,6 +44,7 @@ export function RagPage() {
               role: 'mono',
               text: result.answer,
               meta: monoLatency(result.latencyMs, result.topK),
+              run: result,
             },
           })
         },
@@ -51,21 +65,65 @@ export function RagPage() {
   }
 
   return (
-    <div className="flex h-full">
-      <ChatPanel
-        messages={messages}
-        thinking={askMutation.isPending}
-        hasSources={sources.length > 0}
-        onAsk={handleAsk}
-      />
-      <InspectorPanel
-        lastRun={lastRun}
-        topK={topK}
-        onTopKChange={setTopK}
-        sources={sources}
-        online={online}
-        onIngested={addSource}
-      />
+    <div className="flex h-full flex-col">
+      <header className="sticky top-0 z-10 border-b border-hair bg-ground/70 backdrop-blur-sm">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <MonoBadge size={26} />
+            <Wordmark />
+            <span className="text-[11px] lowercase tracking-[0.1em] text-slate">
+              · rag
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <HealthDot online={online} />
+            <SourcesControl
+              topK={topK}
+              onTopKChange={setTopK}
+              sources={sources}
+              online={online}
+              onIngested={addSource}
+            />
+          </div>
+        </div>
+      </header>
+
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-4">
+          {empty ? (
+            <EmptyState hasSources={sources.length > 0} />
+          ) : (
+            <div className="flex flex-1 flex-col gap-7 py-8">
+              {messages.map((m) => (
+                <MessageBubble
+                  key={m.id}
+                  message={m}
+                  withCursor={!askMutation.isPending && m.id === lastMonoId}
+                />
+              ))}
+              {askMutation.isPending && <ThinkingState />}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mx-auto w-full max-w-3xl px-4 pb-5 pt-1">
+        <Composer disabled={askMutation.isPending} onSubmit={handleAsk} />
+      </div>
+    </div>
+  )
+}
+
+function EmptyState({ hasSources }: { hasSources: boolean }) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-5 py-16 text-center">
+      <MonoBadge size={64} />
+      <div className="flex max-w-[40ch] flex-col gap-2">
+        <p className="text-[17px] leading-relaxed text-bone">{monoVoice.emptyChat}</p>
+        {!hasSources && (
+          <p className="text-[13px] leading-relaxed text-slate">{monoVoice.emptyIndex}</p>
+        )}
+      </div>
     </div>
   )
 }

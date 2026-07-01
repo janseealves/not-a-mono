@@ -1,19 +1,19 @@
 @import 'tailwindcss';
 
-/* ── tokens do mono-brand (mono-brand/mono-brand-spec.md) ── */
+/* ── tokens do mono — alinhados ao portfólio (janseealves.github.io) ── */
 @theme {
-  --color-ground: #0b0c0e; /* obsidiana — fundo da UI */
-  --color-surface: #16181c; /* grafite — cards, painéis */
-  --color-steel: #23262c; /* aço — relevo, trilhos */
-  --color-amber: #ffb02e; /* âmbar — o sinal. escasso. */
-  --color-ember: #c8740a; /* brasa — profundidade, pressed */
-  --color-figure: #0a0b0d; /* preto — a figura do símbolo */
-  --color-bone: #e7e4dd; /* osso — texto primário */
-  --color-slate: #6b7079; /* ardósia — texto secundário */
-  --color-hair: rgba(231, 228, 221, 0.1); /* divisores finos */
+  --color-ground: #fafafa; /* papel — fundo da UI */
+  --color-surface: #ffffff; /* branco — cards, painéis, realce */
+  --color-steel: #e4e4e7; /* zinco-200 — relevo, trilhos, bordas */
+  --color-amber: #ea580c; /* laranja-600 — o acento. escasso. */
+  --color-ember: #c2410c; /* laranja-700 — profundidade, pressed, erro */
+  --color-figure: #fafafa; /* papel — a figura vazada do símbolo */
+  --color-bone: #27272a; /* zinco-800 — texto primário */
+  --color-slate: #71717a; /* zinco-500 — texto secundário */
+  --color-hair: #e4e4e7; /* zinco-200 — divisores finos */
 
-  --font-display: 'Martian Mono', monospace;
-  --font-mono: 'IBM Plex Mono', monospace;
+  --font-display: 'Geist Mono', 'SFMono-Regular', monospace;
+  --font-mono: 'Geist Mono', 'SFMono-Regular', monospace;
 
   --radius-card: 3px;
 }
@@ -26,10 +26,18 @@
   }
 
   body {
-    background: var(--color-ground);
+    background-color: var(--color-ground);
+    /* grid sutil do portfólio — 24px, alinhado à baseline */
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: 0 17px;
+    background-attachment: fixed;
     color: var(--color-bone);
     font-family: var(--font-mono);
-    font-weight: 300;
+    font-weight: 400;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -45,19 +53,7 @@
   }
 }
 
-/* film grain — atmosfera do brandbook */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.045;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* cursor âmbar piscante do MONO */
+/* cursor laranja piscante do MONO */
 @keyframes blink {
   50% {
     opacity: 0;
@@ -71,7 +67,13 @@ body::after {
   background: var(--color-amber);
   margin-left: 4px;
   vertical-align: -0.15em;
-  animation: blink 1.05s steps(1) infinite;
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mono-cursor {
+    animation: none;
+  }
 }
 
 /* range input no estilo do console do brandbook */
@@ -92,7 +94,6 @@ input[type='range']::-webkit-slider-thumb {
   height: 18px;
   border-radius: 2px;
   background: var(--color-amber);
-  box-shadow: 0 0 12px rgba(255, 176, 46, 0.5);
   cursor: grab;
 }
 
@@ -102,6 +103,5 @@ input[type='range']::-moz-range-thumb {
   border: none;
   border-radius: 2px;
   background: var(--color-amber);
-  box-shadow: 0 0 12px rgba(255, 176, 46, 0.5);
   cursor: grab;
 }
