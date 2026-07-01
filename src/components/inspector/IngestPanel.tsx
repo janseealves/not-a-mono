@@ -45,6 +45,14 @@ export function IngestPanel({ onIngested }: IngestPanelProps) {
       >
         {ingest.isPending ? 'indexando…' : 'indexar'}
       </button>
+      {ingest.isPending && (
+        <div className="flex flex-col gap-1.5">
+          <div className="mono-progress" />
+          <p className="text-[10px] leading-relaxed text-slate/70">
+            raspando e indexando a página — pode levar alguns segundos.
+          </p>
+        </div>
+      )}
       {ingest.isError && (
         <p className="text-[10px] leading-relaxed text-ember">{errorMessage}</p>
       )}

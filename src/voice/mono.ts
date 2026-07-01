@@ -19,10 +19,10 @@ export const monoVoice = {
 export const monoLatency = (ms: number, k: number): string =>
   `${(ms / 1000).toFixed(2)}s · top ${k}`
 
-// Rótulo do estado do slab, igual ao brandbook
+// Rótulo do estado do slab: monolito em repouso → dobra nas juntas → articulado
 export const slabLabel = (t: number): string => {
   if (t < 0.04) return 'monolito'
-  if (t < 0.35) return 'fendendo'
+  if (t < 0.35) return 'dobrando'
   if (t < 0.8) return 'articulando'
   return 'articulado'
 }
