@@ -43,9 +43,6 @@ export function ThinkingState() {
           <span className="text-amber">{current.name}</span>{' '}
           <span className="text-slate/60">— {current.desc}…</span>
         </span>
-        <div className="mt-1 max-w-[180px]">
-          <div className="mono-progress" />
-        </div>
       </div>
     </div>
   )
