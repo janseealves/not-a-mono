@@ -90,7 +90,10 @@ export function RagPage() {
         </div>
       </header>
 
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+      <div
+        ref={scrollRef}
+        className="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable_both-edges]"
+      >
         <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-4">
           {empty ? (
             <EmptyState hasSources={sources.length > 0} />
