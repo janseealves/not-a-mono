@@ -22,10 +22,22 @@ export interface SearchResponse {
   results: RetrievedChunk[]
 }
 
-export interface AskResponse {
-  answer: string
-}
+// /ask agora responde em SSE (ver api/client.ts:postStream) em vez de um JSON único.
 
 export interface HealthResponse {
   status: string
+}
+
+// Espelha interfaces/api/schemas/collection.py
+
+export interface CreateCollectionRequest {
+  name: string
+  description?: string | null
+}
+
+export interface Collection {
+  id: string // external_id (uuid) — é o que entra na URL
+  name: string
+  description: string | null
+  created_at: string
 }
