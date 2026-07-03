@@ -20,7 +20,7 @@ export function RagPage() {
   const [topK, setTopK] = useState(5)
   const { online } = useHealth()
   const { collectionId } = useCollection()
-  const { sources, addSource } = useSources()
+  const { sources, addSource } = useSources(collectionId)
   const askMutation = useAsk()
   const scrollRef = useRef<HTMLDivElement>(null)
 
