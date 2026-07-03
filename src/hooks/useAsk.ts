@@ -1,12 +1,16 @@
 import { useMutation } from '@tanstack/react-query'
 
 import { streamAsk } from '../api/rag'
+import { fakeStream } from '../lib/fakeStream'
 import type { RetrievedChunk } from '../types/rag'
+import { monoVoice } from '../voice/mono'
 
 export interface AskInput {
   collectionId: string
   query: string
   topK: number
+  /** collection sem nenhuma fonte ingerida — encena a mensagem padrão em vez de chamar o backend */
+  empty: boolean
   /** chamado a cada token recebido do /ask, pra atualizar a bolha em tempo real */
   onToken: (token: string) => void
 }
@@ -31,11 +35,15 @@ export function useAsk() {
       collectionId,
       query,
       topK,
+      empty,
       onToken,
     }: AskInput): Promise<AskResult> => {
       const started = performance.now()
       let answer = ''
-      for await (const token of streamAsk(collectionId, query, topK)) {
+      const tokens = empty
+        ? fakeStream(monoVoice.emptyIndex)
+        : streamAsk(collectionId, query, topK)
+      for await (const token of tokens) {
         answer += token
         onToken(token)
       }
