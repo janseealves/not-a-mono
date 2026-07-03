@@ -1,11 +1,14 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { ask } from '../api/rag'
+import { streamAsk } from '../api/rag'
 import type { RetrievedChunk } from '../types/rag'
 
 export interface AskInput {
+  collectionId: string
   query: string
   topK: number
+  /** chamado a cada token recebido do /ask, pra atualizar a bolha em tempo real */
+  onToken: (token: string) => void
 }
 
 export interface AskResult {
@@ -24,9 +27,18 @@ export interface AskResult {
 // search() em paralelo e preencha `chunks`/`searchFailed`.
 export function useAsk() {
   return useMutation({
-    mutationFn: async ({ query, topK }: AskInput): Promise<AskResult> => {
+    mutationFn: async ({
+      collectionId,
+      query,
+      topK,
+      onToken,
+    }: AskInput): Promise<AskResult> => {
       const started = performance.now()
-      const { answer } = await ask(query, topK)
+      let answer = ''
+      for await (const token of streamAsk(collectionId, query, topK)) {
+        answer += token
+        onToken(token)
+      }
       const latencyMs = performance.now() - started
 
       return { query, answer, chunks: [], searchFailed: false, latencyMs, topK }

@@ -15,7 +15,10 @@ export interface Message {
   run?: AskResult
 }
 
-export type ConversationAction = { type: 'push'; message: Message }
+export type ConversationAction =
+  | { type: 'push'; message: Message }
+  | { type: 'append'; id: string; text: string }
+  | { type: 'patch'; id: string; patch: Partial<Message> }
 
 export function conversationReducer(
   state: Message[],
@@ -24,6 +27,12 @@ export function conversationReducer(
   switch (action.type) {
     case 'push':
       return [...state, action.message]
+    case 'append':
+      return state.map((m) =>
+        m.id === action.id ? { ...m, text: m.text + action.text } : m,
+      )
+    case 'patch':
+      return state.map((m) => (m.id === action.id ? { ...m, ...action.patch } : m))
   }
 }
 
