@@ -48,12 +48,16 @@ export function RagPage() {
 
     const monoId = messageId()
     dispatch({ type: 'push', message: { id: monoId, role: 'mono', text: '' } })
+    // Sem fontes nesta collection — encena a resposta padrão (mesmo streaming,
+    // mesmo tom) em vez de bater no backend só pra ele dizer a mesma coisa.
+    const isEmptyCollection = sources.length === 0
 
     askMutation.mutate(
       {
         collectionId,
         query,
         topK,
+        empty: isEmptyCollection,
         onToken: (token) => dispatch({ type: 'append', id: monoId, text: token }),
       },
       {
@@ -61,7 +65,11 @@ export function RagPage() {
           dispatch({
             type: 'patch',
             id: monoId,
-            patch: { meta: monoLatency(result.latencyMs, result.topK), run: result },
+            patch: {
+              meta: monoLatency(result.latencyMs, result.topK),
+              run: result,
+              error: isEmptyCollection,
+            },
           })
         },
         onError: (error) => {
