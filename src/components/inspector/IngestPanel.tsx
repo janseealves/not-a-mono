@@ -34,7 +34,7 @@ export function IngestPanel({ collectionId, onIngested }: IngestPanelProps) {
         type="url"
         required
         value={url}
-        disabled={ingest.isPending || !collectionId}
+        disabled={ingest.isPending}
         placeholder="https://…"
         className="rounded-[3px] border border-hair bg-surface px-3 py-2 text-[12px] text-bone placeholder:text-slate/50 focus:border-steel focus:outline-none disabled:opacity-50"
         onChange={(e) => setUrl(e.target.value)}

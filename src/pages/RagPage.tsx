@@ -34,8 +34,17 @@ export function RagPage() {
   const lastMonoId = [...messages].reverse().find((m) => m.role === 'mono')?.id
 
   const handleAsk = (query: string) => {
-    if (!collectionId) return
     dispatch({ type: 'push', message: { id: messageId(), role: 'user', text: query } })
+
+    // A collection ainda não ficou pronta (backend fora do ar, CORS, etc.) —
+    // mesma leitura de "sem resposta" que um /ask falho daria.
+    if (!collectionId) {
+      dispatch({
+        type: 'push',
+        message: { id: messageId(), role: 'mono', text: monoVoice.backendDown, error: true },
+      })
+      return
+    }
 
     const monoId = messageId()
     dispatch({ type: 'push', message: { id: monoId, role: 'mono', text: '' } })
@@ -130,7 +139,7 @@ export function RagPage() {
       </div>
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-5 pt-1">
-        <Composer disabled={askMutation.isPending || !collectionId} onSubmit={handleAsk} />
+        <Composer disabled={askMutation.isPending} onSubmit={handleAsk} />
       </div>
     </div>
   )
