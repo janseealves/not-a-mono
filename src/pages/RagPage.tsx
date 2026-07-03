@@ -9,6 +9,7 @@ import { HealthDot } from '../components/shell/HealthDot'
 import { SourcesControl } from '../components/shell/SourcesControl'
 import { Wordmark } from '../components/shell/Wordmark'
 import { type AskResult, useAsk } from '../hooks/useAsk'
+import { useCollection } from '../hooks/useCollection'
 import { useHealth } from '../hooks/useHealth'
 import { useSources } from '../hooks/useSources'
 import { conversationReducer, messageId } from '../state/conversation'
@@ -18,7 +19,8 @@ export function RagPage() {
   const [messages, dispatch] = useReducer(conversationReducer, [])
   const [topK, setTopK] = useState(5)
   const { online } = useHealth()
-  const { sources, addSource } = useSources()
+  const { collectionId } = useCollection()
+  const { sources, addSource } = useSources(collectionId)
   const askMutation = useAsk()
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -33,28 +35,41 @@ export function RagPage() {
 
   const handleAsk = (query: string) => {
     dispatch({ type: 'push', message: { id: messageId(), role: 'user', text: query } })
+
+    // A collection ainda não ficou pronta (backend fora do ar, CORS, etc.) —
+    // mesma leitura de "sem resposta" que um /ask falho daria.
+    if (!collectionId) {
+      dispatch({
+        type: 'push',
+        message: { id: messageId(), role: 'mono', text: monoVoice.backendDown, error: true },
+      })
+      return
+    }
+
+    const monoId = messageId()
+    dispatch({ type: 'push', message: { id: monoId, role: 'mono', text: '' } })
+
     askMutation.mutate(
-      { query, topK },
+      {
+        collectionId,
+        query,
+        topK,
+        onToken: (token) => dispatch({ type: 'append', id: monoId, text: token }),
+      },
       {
         onSuccess: (result: AskResult) => {
           dispatch({
-            type: 'push',
-            message: {
-              id: messageId(),
-              role: 'mono',
-              text: result.answer,
-              meta: monoLatency(result.latencyMs, result.topK),
-              run: result,
-            },
+            type: 'patch',
+            id: monoId,
+            patch: { meta: monoLatency(result.latencyMs, result.topK), run: result },
           })
         },
         onError: (error) => {
           const offline = error instanceof ApiError && error.isOffline
           dispatch({
-            type: 'push',
-            message: {
-              id: messageId(),
-              role: 'mono',
+            type: 'patch',
+            id: monoId,
+            patch: {
               text: offline ? monoVoice.backendDown : monoVoice.askFailed,
               error: true,
             },
@@ -79,6 +94,7 @@ export function RagPage() {
             <div className="flex items-center gap-4">
               <HealthDot online={online} />
               <SourcesControl
+                collectionId={collectionId}
                 topK={topK}
                 onTopKChange={setTopK}
                 sources={sources}
@@ -99,14 +115,24 @@ export function RagPage() {
             <EmptyState hasSources={sources.length > 0} />
           ) : (
             <div className="flex flex-1 flex-col gap-7 pb-8 pt-20">
-              {messages.map((m) => (
-                <MessageBubble
-                  key={m.id}
-                  message={m}
-                  withCursor={!askMutation.isPending && m.id === lastMonoId}
-                />
-              ))}
-              {askMutation.isPending && <ThinkingState />}
+              {messages.map((m) => {
+                // enquanto o token do stream ainda não chegou, mostra o "pensando"
+                // no lugar da bolha vazia do mono
+                const awaitingFirstToken =
+                  m.role === 'mono' &&
+                  m.text === '' &&
+                  askMutation.isPending &&
+                  m.id === lastMonoId
+                return awaitingFirstToken ? (
+                  <ThinkingState key={m.id} />
+                ) : (
+                  <MessageBubble
+                    key={m.id}
+                    message={m}
+                    withCursor={askMutation.isPending && m.id === lastMonoId}
+                  />
+                )
+              })}
             </div>
           )}
         </div>

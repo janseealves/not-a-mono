@@ -5,12 +5,13 @@ import { useIngest } from '../../hooks/useIngest'
 import { monoVoice } from '../../voice/mono'
 
 interface IngestPanelProps {
+  collectionId: string | null
   onIngested: (url: string) => void
 }
 
-export function IngestPanel({ onIngested }: IngestPanelProps) {
+export function IngestPanel({ collectionId, onIngested }: IngestPanelProps) {
   const [url, setUrl] = useState('')
-  const ingest = useIngest((ingested) => {
+  const ingest = useIngest(collectionId, (ingested) => {
     onIngested(ingested)
     setUrl('')
   })
@@ -40,7 +41,7 @@ export function IngestPanel({ onIngested }: IngestPanelProps) {
       />
       <button
         type="submit"
-        disabled={ingest.isPending || !url.trim()}
+        disabled={ingest.isPending || !url.trim() || !collectionId}
         className="rounded-[3px] border border-steel px-3 py-2 font-display text-[10px] font-medium uppercase tracking-[0.18em] text-bone transition-colors hover:border-amber hover:text-amber disabled:cursor-not-allowed disabled:opacity-40"
       >
         {ingest.isPending ? 'indexando…' : 'indexar'}

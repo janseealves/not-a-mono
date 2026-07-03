@@ -5,6 +5,7 @@ import { SourceList } from '../inspector/SourceList'
 import { TopKControl } from '../inspector/TopKControl'
 
 interface SourcesControlProps {
+  collectionId: string | null
   topK: number
   onTopKChange: (k: number) => void
   sources: string[]
@@ -15,6 +16,7 @@ interface SourcesControlProps {
 // Tudo que era o inspector cabe aqui: ingerir fontes, ajustar top_k, ver o índice.
 // Fica fora do caminho até você precisar — como um menu do claude.ai.
 export function SourcesControl({
+  collectionId,
   topK,
   onTopKChange,
   sources,
@@ -51,7 +53,7 @@ export function SourcesControl({
               <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-slate">
                 indexar url
               </span>
-              <IngestPanel onIngested={onIngested} />
+              <IngestPanel collectionId={collectionId} onIngested={onIngested} />
             </div>
 
             <div className="border-t border-hair pt-4">

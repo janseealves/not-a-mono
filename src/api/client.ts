@@ -38,3 +38,44 @@ export const get = <T>(path: string) => request<T>(path)
 
 export const post = <T>(path: string, body: unknown) =>
   request<T>(path, { method: 'POST', body: JSON.stringify(body) })
+
+// Consome uma resposta em Server-Sent Events (ver shared/streaming.py no
+// backend): cada frame é `data: {"content": "..."}\n\n`, terminando em
+// `data: [DONE]\n\n`. Gera o texto de cada chunk conforme chega.
+export async function* postStream(path: string, body: unknown): AsyncGenerator<string> {
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  } catch {
+    throw new ApiError('backend unreachable')
+  }
+  if (!res.ok) {
+    throw new ApiError(`HTTP ${res.status}`, res.status)
+  }
+  if (!res.body) return
+
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+
+    let frameEnd: number
+    while ((frameEnd = buffer.indexOf('\n\n')) !== -1) {
+      const frame = buffer.slice(0, frameEnd).trim()
+      buffer = buffer.slice(frameEnd + 2)
+      if (!frame.startsWith('data:')) continue
+
+      const data = frame.slice('data:'.length).trim()
+      if (data === '[DONE]') return
+      yield (JSON.parse(data) as { content: string }).content
+    }
+  }
+}
