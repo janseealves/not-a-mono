@@ -13,6 +13,7 @@ interface ProxyRequest {
 
 interface ProxyResponse {
   writeHead(status: number, headers: Record<string, string>): void
+  write(chunk: Uint8Array): void
   end(chunk?: string): void
 }
 
@@ -35,11 +36,21 @@ export default async function handler(req: ProxyRequest, res: ProxyResponse) {
       headers: { 'content-type': 'application/json' },
       body: hasBody ? JSON.stringify(req.body) : undefined,
     })
-    const text = await upstream.text()
     res.writeHead(upstream.status, {
       'content-type': upstream.headers.get('content-type') ?? 'application/json',
     })
-    res.end(text)
+
+    // Repassa em stream (não buffereia) — necessário pro SSE de /ask chegar
+    // token a token em vez de tudo de uma vez quando a resposta terminar.
+    const reader = upstream.body?.getReader()
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        res.write(value)
+      }
+    }
+    res.end()
   } catch {
     res.writeHead(502, { 'content-type': 'application/json' })
     res.end(JSON.stringify({ error: 'backend unreachable' }))
