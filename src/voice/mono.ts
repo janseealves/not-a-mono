@@ -22,8 +22,8 @@ export const monoVoice = {
     '1. "fontes" (canto superior direito) — indexa uma URL pro índice desta sessão.',
     '2. pergunte aqui embaixo. Cada resposta mostra latência e quantos chunks entraram.',
     '3. recarregar a página limpa a conversa — o índice, não.',
-    '',
-    'comandos: /help — este texto.',
+    //'',
+    //'comandos: /help — este texto.',
   ].join('\n'),
 } as const
 

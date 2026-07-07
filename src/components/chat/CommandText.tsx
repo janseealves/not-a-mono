@@ -13,10 +13,7 @@ export function CommandText({ text }: CommandTextProps) {
     .split(pattern)
     .map((part, i) =>
       (CHAT_COMMANDS as readonly string[]).includes(part) ? (
-        <code
-          key={i}
-          className="rounded-[2px] border border-hair bg-surface px-1 py-0.5 font-display text-[10px] normal-case text-amber"
-        >
+        <code key={i} className="normal-case text-amber">
           {part}
         </code>
       ) : (
