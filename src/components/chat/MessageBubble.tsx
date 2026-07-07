@@ -1,5 +1,6 @@
 import type { Message } from '../../state/conversation'
 import { MonoBadge } from '../mono/MonoBadge'
+import { CommandText } from './CommandText'
 
 interface MessageBubbleProps {
   message: Message
@@ -12,7 +13,7 @@ export function MessageBubble({ message, withCursor }: MessageBubbleProps) {
     return (
       <div className="flex justify-end">
         <div className="max-w-[80%] whitespace-pre-wrap rounded-lg rounded-br-sm border border-hair bg-surface px-4 py-2.5 text-sm leading-relaxed text-bone">
-          {message.text}
+          <CommandText text={message.text} />
         </div>
       </div>
     )
@@ -30,7 +31,7 @@ export function MessageBubble({ message, withCursor }: MessageBubbleProps) {
             message.error ? 'text-ember' : 'text-bone'
           }`}
         >
-          {message.text}
+          <CommandText text={message.text} />
           {withCursor && <span className="mono-cursor" />}
         </p>
         {/* referências ocultas por enquanto — reativar quando a API tiver GET de document */}

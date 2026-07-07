@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { ApiError } from '../api/client'
+import { CommandText } from '../components/chat/CommandText'
 import { Composer } from '../components/chat/Composer'
 import { MessageBubble } from '../components/chat/MessageBubble'
 import { ThinkingState } from '../components/chat/ThinkingState'
@@ -12,29 +13,53 @@ import { type AskResult, useAsk } from '../hooks/useAsk'
 import { useCollection } from '../hooks/useCollection'
 import { useHealth } from '../hooks/useHealth'
 import { useSources } from '../hooks/useSources'
+import { fakeStream } from '../lib/fakeStream'
 import { conversationReducer, messageId } from '../state/conversation'
 import { monoLatency, monoVoice } from '../voice/mono'
 
 export function RagPage() {
   const [messages, dispatch] = useReducer(conversationReducer, [])
-  const [topK, setTopK] = useState(5)
+  // Fixo — o usuário não escolhe top_k, é detalhe de implementação da busca.
+  const topK = 5
   const { online } = useHealth()
   const { collectionId } = useCollection()
   const { sources, addSource } = useSources(collectionId)
   const askMutation = useAsk()
+  // Comandos locais (ex.: /help) não passam pelo askMutation — não batem no
+  // backend — mas ainda encenam o mesmo streaming, então têm seu próprio pending.
+  const [commandPending, setCommandPending] = useState(false)
+  const pending = askMutation.isPending || commandPending
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const empty = messages.length === 0 && !askMutation.isPending
+  const empty = messages.length === 0 && !pending
 
   // mantém a conversa colada no fim
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
-  }, [messages, askMutation.isPending])
+  }, [messages, pending])
 
   const lastMonoId = [...messages].reverse().find((m) => m.role === 'mono')?.id
 
+  // Encena um texto local como se fosse uma resposta em stream — usado pelos
+  // comandos do chat (/help), que não têm nada pra buscar no backend.
+  const streamLocalReply = async (text: string) => {
+    const monoId = messageId()
+    dispatch({ type: 'push', message: { id: monoId, role: 'mono', text: '' } })
+    setCommandPending(true)
+    for await (const token of fakeStream(text)) {
+      dispatch({ type: 'append', id: monoId, text: token })
+    }
+    setCommandPending(false)
+  }
+
   const handleAsk = (query: string) => {
     dispatch({ type: 'push', message: { id: messageId(), role: 'user', text: query } })
+
+    // Comando local — não bate no backend, só ensina a usar o resto.
+    if (query.toLowerCase() === '/help') {
+      void streamLocalReply(monoVoice.help)
+      return
+    }
 
     // A collection ainda não ficou pronta (backend fora do ar, CORS, etc.) —
     // mesma leitura de "sem resposta" que um /ask falho daria.
@@ -103,8 +128,6 @@ export function RagPage() {
               <HealthDot online={online} />
               <SourcesControl
                 collectionId={collectionId}
-                topK={topK}
-                onTopKChange={setTopK}
                 sources={sources}
                 online={online}
                 onIngested={addSource}
@@ -119,11 +142,11 @@ export function RagPage() {
         className="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable_both-edges]"
       >
         <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col pl-8 pr-4">
-          {empty ? (
-            <EmptyState hasSources={sources.length > 0} />
-          ) : (
-            <div className="flex flex-1 flex-col gap-7 pb-8 pt-20">
-              {messages.map((m) => {
+          <div className="flex flex-1 flex-col gap-7 pb-8 pt-20">
+            {empty ? (
+              <WelcomeMessage hasSources={sources.length > 0} />
+            ) : (
+              messages.map((m) => {
                 // enquanto o token do stream ainda não chegou, mostra o "pensando"
                 // no lugar da bolha vazia do mono
                 const awaitingFirstToken =
@@ -137,31 +160,39 @@ export function RagPage() {
                   <MessageBubble
                     key={m.id}
                     message={m}
-                    withCursor={askMutation.isPending && m.id === lastMonoId}
+                    withCursor={pending && m.id === lastMonoId}
                   />
                 )
-              })}
-            </div>
-          )}
+              })
+            )}
+          </div>
         </div>
       </div>
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-5 pt-1">
-        <Composer disabled={askMutation.isPending} onSubmit={handleAsk} />
+        <Composer disabled={pending} onSubmit={handleAsk} />
       </div>
     </div>
   )
 }
 
-function EmptyState({ hasSources }: { hasSources: boolean }) {
+// A primeira mensagem é do mono, não uma splash screen — mesma marcação de
+// uma resposta real, só que estática e fora do reducer (não é uma Message).
+function WelcomeMessage({ hasSources }: { hasSources: boolean }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-5 py-16 text-center">
-      <MonoBadge size={64} />
-      <div className="flex max-w-[40ch] flex-col gap-2">
-        <p className="text-[17px] leading-relaxed text-bone">{monoVoice.emptyChat}</p>
+    <div className="flex gap-3">
+      <MonoBadge size={26} />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-0.5">
+        <span className="text-[10px] uppercase tracking-[0.22em] text-slate">mono</span>
+        <p className="max-w-[60ch] whitespace-pre-wrap text-[15px] leading-relaxed tracking-[-0.01em] text-bone">
+          {monoVoice.welcome}
+        </p>
         {!hasSources && (
           <p className="text-[13px] leading-relaxed text-slate">{monoVoice.emptyIndex}</p>
         )}
+        <p className="text-[11px] uppercase tracking-[0.14em] text-slate/60">
+          <CommandText text={monoVoice.helpHint} />
+        </p>
       </div>
     </div>
   )
