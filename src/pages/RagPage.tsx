@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { ApiError } from '../api/client'
 import { CommandText } from '../components/chat/CommandText'
@@ -13,6 +13,7 @@ import { type AskResult, useAsk } from '../hooks/useAsk'
 import { useCollection } from '../hooks/useCollection'
 import { useHealth } from '../hooks/useHealth'
 import { useSources } from '../hooks/useSources'
+import { fakeStream } from '../lib/fakeStream'
 import { conversationReducer, messageId } from '../state/conversation'
 import { monoLatency, monoVoice } from '../voice/mono'
 
@@ -24,26 +25,39 @@ export function RagPage() {
   const { collectionId } = useCollection()
   const { sources, addSource } = useSources(collectionId)
   const askMutation = useAsk()
+  // Comandos locais (ex.: /help) não passam pelo askMutation — não batem no
+  // backend — mas ainda encenam o mesmo streaming, então têm seu próprio pending.
+  const [commandPending, setCommandPending] = useState(false)
+  const pending = askMutation.isPending || commandPending
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const empty = messages.length === 0 && !askMutation.isPending
+  const empty = messages.length === 0 && !pending
 
   // mantém a conversa colada no fim
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
-  }, [messages, askMutation.isPending])
+  }, [messages, pending])
 
   const lastMonoId = [...messages].reverse().find((m) => m.role === 'mono')?.id
+
+  // Encena um texto local como se fosse uma resposta em stream — usado pelos
+  // comandos do chat (/help), que não têm nada pra buscar no backend.
+  const streamLocalReply = async (text: string) => {
+    const monoId = messageId()
+    dispatch({ type: 'push', message: { id: monoId, role: 'mono', text: '' } })
+    setCommandPending(true)
+    for await (const token of fakeStream(text)) {
+      dispatch({ type: 'append', id: monoId, text: token })
+    }
+    setCommandPending(false)
+  }
 
   const handleAsk = (query: string) => {
     dispatch({ type: 'push', message: { id: messageId(), role: 'user', text: query } })
 
     // Comando local — não bate no backend, só ensina a usar o resto.
     if (query.toLowerCase() === '/help') {
-      dispatch({
-        type: 'push',
-        message: { id: messageId(), role: 'mono', text: monoVoice.help },
-      })
+      void streamLocalReply(monoVoice.help)
       return
     }
 
@@ -146,7 +160,7 @@ export function RagPage() {
                   <MessageBubble
                     key={m.id}
                     message={m}
-                    withCursor={askMutation.isPending && m.id === lastMonoId}
+                    withCursor={pending && m.id === lastMonoId}
                   />
                 )
               })
@@ -156,7 +170,7 @@ export function RagPage() {
       </div>
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-5 pt-1">
-        <Composer disabled={askMutation.isPending} onSubmit={handleAsk} />
+        <Composer disabled={pending} onSubmit={handleAsk} />
       </div>
     </div>
   )
