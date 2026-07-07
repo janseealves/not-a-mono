@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { ApiError } from '../../api/client'
 import { useIngest } from '../../hooks/useIngest'
 import { monoVoice } from '../../voice/mono'
+import { Button } from '../ui/Button'
+import { Input } from '../ui/Input'
 
 interface IngestPanelProps {
   collectionId: string | null
@@ -30,22 +32,17 @@ export function IngestPanel({ collectionId, onIngested }: IngestPanelProps) {
         if (source && !ingest.isPending) ingest.mutate(source)
       }}
     >
-      <input
+      <Input
         type="url"
         required
         value={url}
         disabled={ingest.isPending}
         placeholder="https://…"
-        className="rounded-[3px] border border-hair bg-surface px-3 py-2 text-[12px] text-bone placeholder:text-slate/50 focus:border-steel focus:outline-none disabled:opacity-50"
         onChange={(e) => setUrl(e.target.value)}
       />
-      <button
-        type="submit"
-        disabled={ingest.isPending || !url.trim() || !collectionId}
-        className="rounded-[3px] border border-steel px-3 py-2 font-display text-[10px] font-medium uppercase tracking-[0.18em] text-bone transition-colors hover:border-amber hover:text-amber disabled:cursor-not-allowed disabled:opacity-40"
-      >
+      <Button type="submit" variant="secondary" disabled={ingest.isPending || !url.trim() || !collectionId}>
         {ingest.isPending ? 'indexando…' : 'indexar'}
-      </button>
+      </Button>
       {ingest.isPending && (
         <div className="flex flex-col gap-1.5">
           <div className="mono-progress" />
