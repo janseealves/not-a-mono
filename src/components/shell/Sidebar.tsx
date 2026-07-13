@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { Link, useParams } from 'react-router-dom'
 
 import type { Thread } from '../../lib/agentStorage'
 import { MonoBadge } from '../mono/MonoBadge'
@@ -13,7 +12,9 @@ interface SidebarProps {
   // de <Sidebar> recebe o `expanded` que faz sentido pra moldura em que está.
   expanded: boolean
   threads: Thread[]
+  activeThreadId: string | null
   onCreateThread: () => void
+  onSelectThread: (id: string) => void
   onRenameThread: (id: string, title: string) => void
   onDeleteThread: (id: string) => void
 }
@@ -21,9 +22,20 @@ interface SidebarProps {
 // Conteúdo puro da sidebar — quem decide a moldura (trilho desktop vs. drawer
 // mobile) é o AppShell, renderizando isto dentro de DesktopSidebarRail e de
 // MobileSidebarDrawer (duas instâncias independentes, uma por breakpoint).
-export function Sidebar({ expanded, threads, onCreateThread, onRenameThread, onDeleteThread }: SidebarProps) {
-  const { threadId: activeThreadId } = useParams()
-
+//
+// Trocar de thread é um botão, não um <Link>: a thread ativa é estado local
+// (localStorage), não uma rota — o id não deveria aparecer na URL, já que uma
+// thread só existe no navegador que a criou (um link pra ela não funcionaria
+// em nenhum outro dispositivo).
+export function Sidebar({
+  expanded,
+  threads,
+  activeThreadId,
+  onCreateThread,
+  onSelectThread,
+  onRenameThread,
+  onDeleteThread,
+}: SidebarProps) {
   return (
     <>
       <div className="flex items-center px-3 py-4">
@@ -54,14 +66,24 @@ export function Sidebar({ expanded, threads, onCreateThread, onRenameThread, onD
         {threads.map((thread) => {
           const isActive = thread.id === activeThreadId
           return (
-            <Link
+            // div com role="button", não <button>: o "⋯" (ThreadMenu) lá
+            // dentro já é um <button> de verdade, e <button> dentro de
+            // <button> é HTML inválido (o navegador quebra a árvore do DOM).
+            <div
               key={thread.id}
-              to={`/demo/${thread.id}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelectThread(thread.id)}
+              onKeyDown={(e) => {
+                if (e.key !== 'Enter' && e.key !== ' ') return
+                e.preventDefault()
+                onSelectThread(thread.id)
+              }}
               className={cx(
                 // sem overflow-hidden aqui: cortaria o dropdown do ThreadMenu
                 // (position:absolute, "escapa" da linha). SidebarLabel já se
                 // recorta por conta própria.
-                'mb-0.5 flex items-center rounded-[2px] py-2 pr-2 text-[13px] transition-colors',
+                'mb-0.5 flex w-full cursor-pointer items-center rounded-[2px] py-2 pr-2 text-[13px] transition-colors',
                 isActive ? 'bg-ground text-bone' : 'text-slate hover:bg-ground hover:text-bone',
               )}
             >
@@ -75,7 +97,7 @@ export function Sidebar({ expanded, threads, onCreateThread, onRenameThread, onD
                   {thread.title.trim().charAt(0) || '?'}
                 </span>
               </IconSlot>
-              <SidebarLabel expanded={expanded} className="min-w-0 flex-1 truncate">
+              <SidebarLabel expanded={expanded} className="min-w-0 flex-1 truncate text-left">
                 {thread.title}
               </SidebarLabel>
               {/* só ocupa espaço expandida — no trilho colapsado de 60px não
@@ -87,7 +109,7 @@ export function Sidebar({ expanded, threads, onCreateThread, onRenameThread, onD
                   onDelete={() => onDeleteThread(thread.id)}
                 />
               )}
-            </Link>
+            </div>
           )
         })}
       </nav>

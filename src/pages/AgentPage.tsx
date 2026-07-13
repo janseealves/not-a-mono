@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Navigate, useOutletContext, useParams } from 'react-router-dom'
+import { useOutletContext } from 'react-router-dom'
 
 import { CommandText } from '../components/chat/CommandText'
 import { Composer } from '../components/chat/Composer'
@@ -17,9 +17,9 @@ import { fakeStream } from '../lib/fakeStream'
 import { agentVoice } from '../voice/agent'
 
 export function AgentPage() {
-  const { threadId } = useParams<{ threadId: string }>()
   const threadsApi = useOutletContext<ThreadsApi>()
-  const thread = threadsApi.threads.find((t) => t.id === threadId)
+  const { threads, activeThreadId, createThread, setActiveThreadId } = threadsApi
+  const thread = threads.find((t) => t.id === activeThreadId)
 
   const { online } = useHealth()
   const { collectionId, invalidate: invalidateCollection } = useCollection()
@@ -39,17 +39,31 @@ export function AgentPage() {
   const [commandPending, setCommandPending] = useState(false)
   const disabled = pending || streamingMessageId !== null || commandPending
   const scrollRef = useRef<HTMLDivElement>(null)
+  // Só protege a criação (não a troca) contra o double-invoke do StrictMode:
+  // escolher uma thread já existente é idempotente, chamar createThread()
+  // duas vezes não seria.
+  const createdRef = useRef(false)
 
+  // Resolve qual thread mostrar sempre que a ativa some da lista (thread nova
+  // sem nenhuma ainda, ou a ativa foi apagada) — sem isso virar rota, é aqui
+  // que mora a lógica que antes ficava em AgentIndexRedirect.
   useEffect(() => {
-    if (thread) threadsApi.setActiveThreadId(thread.id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thread?.id])
+    const activeExists = activeThreadId && threads.some((t) => t.id === activeThreadId)
+    if (activeExists) return
+    if (threads.length > 0) {
+      setActiveThreadId(threads[0].id)
+      return
+    }
+    if (createdRef.current) return
+    createdRef.current = true
+    setActiveThreadId(createThread().id)
+  }, [activeThreadId, threads, createThread, setActiveThreadId])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
   }, [messages, disabled])
 
-  if (!threadId || !thread) return <Navigate to="/demo" replace />
+  if (!thread) return null
 
   const lastAgentId = [...messages].reverse().find((m) => m.role === 'agent')?.id
 

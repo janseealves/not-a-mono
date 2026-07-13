@@ -11,9 +11,9 @@ interface ThreadMenuProps {
   onDelete: () => void
 }
 
-// Menu de contexto por thread na sidebar. Fica dentro do <Link> do item da
-// thread, então todo clique aqui precisa parar de propagar pra não disparar
-// a navegação do Link.
+// Menu de contexto por thread na sidebar. Fica dentro do <button> do item da
+// thread, então todo clique aqui precisa parar de propagar pra não trocar de
+// thread só por abrir o menu.
 export function ThreadMenu({ title, onRename, onDelete }: ThreadMenuProps) {
   const [open, setOpen] = useState(false)
   const [renaming, setRenaming] = useState(false)
@@ -39,14 +39,7 @@ export function ThreadMenu({ title, onRename, onDelete }: ThreadMenuProps) {
     <div
       ref={containerRef}
       className="relative"
-      // stopPropagation não basta: sem preventDefault, o clique ainda dispara
-      // a navegação nativa do <a> do Link ancestor (o handler do Link, que
-      // faria o preventDefault, nunca chega a rodar porque a propagação já
-      // foi cortada antes de alcançá-lo).
-      onClick={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-      }}
+      onClick={(e) => e.stopPropagation()}
     >
       <button
         type="button"
@@ -69,10 +62,6 @@ export function ThreadMenu({ title, onRename, onDelete }: ThreadMenuProps) {
               }}
             >
               <Input autoFocus value={value} onChange={(e) => setValue(e.target.value)} />
-              {/* type="button", não "submit": um submit aqui dispararia o
-                  preventDefault do container (que bloqueia a navegação do
-                  Link) ANTES do evento 'submit' rodar — cancelando os dois
-                  default actions da mesma vez, e o form nunca commitaria. */}
               <Button type="button" variant="secondary" onClick={commitRename}>
                 salvar
               </Button>

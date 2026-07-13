@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
 import { useThreads } from '../../hooks/useThreads'
 import { DesktopSidebarRail, MobileDrawerProvider, MobileSidebarDrawer } from './SidebarShell'
@@ -16,18 +16,18 @@ import { Sidebar } from './Sidebar'
 // que isso é só sobre o drawer mobile — o hover do trilho desktop é estado
 // local do próprio DesktopSidebarRail, não passa por aqui.
 export function AppShell() {
-  const navigate = useNavigate()
   const threadsApi = useThreads()
 
   const handleCreateThread = () => {
     const thread = threadsApi.createThread()
     threadsApi.setActiveThreadId(thread.id)
-    navigate(`/demo/${thread.id}`)
   }
 
   const sidebarProps = {
     threads: threadsApi.threads,
+    activeThreadId: threadsApi.activeThreadId,
     onCreateThread: handleCreateThread,
+    onSelectThread: threadsApi.setActiveThreadId,
     onRenameThread: threadsApi.renameThread,
     onDeleteThread: threadsApi.deleteThread,
   }
