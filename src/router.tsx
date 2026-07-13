@@ -1,16 +1,18 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import App from './App'
-import { RagPage } from './pages/RagPage'
+import { AgentIndexRedirect } from './pages/AgentIndexRedirect'
+import { AgentPage } from './pages/AgentPage'
 
-// Uma rota por módulo do not-a-monolith. Novos módulos (ocr, agents...)
-// entram aqui quando existirem no backend.
+// Demo pública (sem auth) em /demo — sessão com o Agent, threads persistidas
+// no navegador. Novos módulos do backend entram aqui quando existirem.
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { index: true, element: <Navigate to="/rag" replace /> },
-      { path: 'rag', element: <RagPage /> },
+      { index: true, element: <Navigate to="/demo" replace /> },
+      { path: 'demo', element: <AgentIndexRedirect /> },
+      { path: 'demo/:threadId', element: <AgentPage /> },
     ],
   },
 ])
