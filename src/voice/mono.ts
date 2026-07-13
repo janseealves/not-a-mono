@@ -1,35 +1,3 @@
-// A voz do MONO — seco, preciso, levemente afiado.
-// Defaults do brandbook: humor 60 · franqueza 90 · verbosidade 25.
-
-export const monoVoice = {
-  welcome:
-    'Recupero, raciocino e respondo — nessa ordem. Sem fonte indexada, eu não invento: prefiro admitir que não sei a improvisar uma resposta bonita.',
-  helpHint: 'primeira vez? digite /help.',
-  emptyIndex: 'Índice vazio. Ingira alguma coisa primeiro — eu não invento fontes.',
-  backendDown: 'Sem resposta do back-end. Ou caiu, ou está fingindo que não me conhece.',
-  askFailed: 'Não consegui responder. O back-end engasgou no meio do raciocínio.',
-  searchFailed: 'A resposta saiu, mas o detalhe da recuperação não. O search falhou — siga sem ele.',
-  noChunks: 'Nada recuperado. Ou o índice está vazio, ou a pergunta não toca em nada que eu conheça.',
-  ingestError: 'Essa URL não entrou. Verifique se é um endereço de verdade.',
-  ingestOffline: 'Não dá pra indexar com o back-end fora do ar. Óbvio, eu sei.',
-  sourcesEphemeral:
-    'Fontes desta sessão. Se o back-end reiniciar, o índice em memória esquece tudo.',
-  offlineWarning: 'Back-end fora do ar. O índice em memória provavelmente já era.',
-  inspectorIdle: 'Nada inspecionado ainda. Faça uma pergunta e eu mostro o que recuperei.',
-  help: [
-    'Recupero, raciocino e respondo — nessa ordem. Sem fonte indexada, eu não invento.',
-    '',
-    '1. "fontes" (canto superior direito) — indexa uma URL pro índice desta sessão.',
-    '2. pergunte aqui embaixo. Cada resposta mostra latência e quantos chunks entraram.',
-    '3. recarregar a página limpa a conversa — o índice, não.',
-    //'',
-    //'comandos: /help — este texto.',
-  ].join('\n'),
-} as const
-
-export const monoLatency = (ms: number, k: number): string =>
-  `${(ms / 1000).toFixed(2)}s · top ${k}`
-
 // Rótulo do estado do slab: monolito em repouso → dobra nas juntas → articulado
 export const slabLabel = (t: number): string => {
   if (t < 0.04) return 'monolito'

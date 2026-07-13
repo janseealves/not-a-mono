@@ -1,4 +1,4 @@
-import type { Collection } from '../types/rag'
+import type { Collection } from '../types/collections'
 import { get, post } from './client'
 
 export const createCollection = (name: string, description?: string) =>

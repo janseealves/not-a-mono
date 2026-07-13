@@ -39,10 +39,16 @@ export const get = <T>(path: string) => request<T>(path)
 export const post = <T>(path: string, body: unknown) =>
   request<T>(path, { method: 'POST', body: JSON.stringify(body) })
 
+export interface SseFrame {
+  /** nome do evento SSE ('message' é o default do EventSource quando ausente) */
+  event: string
+  data: unknown
+}
+
 // Consome uma resposta em Server-Sent Events (ver shared/streaming.py no
-// backend): cada frame é `data: {"content": "..."}\n\n`, terminando em
-// `data: [DONE]\n\n`. Gera o texto de cada chunk conforme chega.
-export async function* postStream(path: string, body: unknown): AsyncGenerator<string> {
+// backend): cada frame é `[event: <nome>\n]data: <json>\n\n`, terminando em
+// `data: [DONE]\n\n`. Gera cada frame já decodificado conforme chega.
+export async function* sseFrames(path: string, body: unknown): AsyncGenerator<SseFrame> {
   let res: Response
   try {
     res = await fetch(`${BASE_URL}${path}`, {
@@ -69,13 +75,18 @@ export async function* postStream(path: string, body: unknown): AsyncGenerator<s
 
     let frameEnd: number
     while ((frameEnd = buffer.indexOf('\n\n')) !== -1) {
-      const frame = buffer.slice(0, frameEnd).trim()
+      const frame = buffer.slice(0, frameEnd)
       buffer = buffer.slice(frameEnd + 2)
-      if (!frame.startsWith('data:')) continue
 
-      const data = frame.slice('data:'.length).trim()
-      if (data === '[DONE]') return
-      yield (JSON.parse(data) as { content: string }).content
+      let event = 'message'
+      let dataLine: string | undefined
+      for (const line of frame.split('\n')) {
+        if (line.startsWith('event:')) event = line.slice('event:'.length).trim()
+        else if (line.startsWith('data:')) dataLine = line.slice('data:'.length).trim()
+      }
+      if (dataLine === undefined) continue
+      if (dataLine === '[DONE]') return
+      yield { event, data: JSON.parse(dataLine) }
     }
   }
 }
