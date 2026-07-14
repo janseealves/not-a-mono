@@ -9,9 +9,11 @@ import { MonoBadge } from '../components/mono/MonoBadge'
 import type { ThreadsApi } from '../components/shell/AppShell'
 import { HealthDot } from '../components/shell/HealthDot'
 import { SidebarMenuButton } from '../components/shell/SidebarShell'
+import { SourcesControl } from '../components/shell/SourcesControl'
 import { useAgentChat } from '../hooks/useAgentChat'
 import { useCollection } from '../hooks/useCollection'
 import { useHealth } from '../hooks/useHealth'
+import { useSources } from '../hooks/useSources'
 import { useThreadMessages } from '../hooks/useThreadMessages'
 import { fakeStream } from '../lib/fakeStream'
 import { agentVoice } from '../voice/agent'
@@ -23,6 +25,7 @@ export function AgentPage() {
 
   const { online } = useHealth()
   const { collectionId, invalidate: invalidateCollection } = useCollection()
+  const { sources, addSource } = useSources(collectionId)
   const { messages, streamingMessageId, addMessage, syncMessage, commitMessage } = useThreadMessages(
     thread?.id ?? null,
   )
@@ -103,7 +106,15 @@ export function AgentPage() {
               <SidebarMenuButton />
               <span className="truncate text-[13px] text-bone">{thread.title}</span>
             </div>
-            <HealthDot online={online} />
+            <div className="flex items-center gap-2">
+              <SourcesControl
+                collectionId={collectionId}
+                sources={sources}
+                online={online}
+                onIngested={addSource}
+              />
+              <HealthDot online={online} />
+            </div>
           </div>
         </div>
       </header>
