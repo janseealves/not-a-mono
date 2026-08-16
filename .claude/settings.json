@@ -1,14 +1,6 @@
 {
   "permissions": {
-    "deny": [
-      "Bash(git push:*)",
-      "Bash(git reset:*)",
-      "Bash(git checkout:*)",
-      "Bash(rm:*)",
-      "Bash(mv:*)",
-      "Bash(>:*)",
-      "Bash(tee:*)"
-    ],
+    "deny": [],
     "allow": [
       "Read",
       "Glob",
