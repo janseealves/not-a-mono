@@ -131,12 +131,6 @@ export function AgentPage() {
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-5 pt-1">
         <Composer disabled={disabled} onSubmit={handleSubmit} />
-        {/* Persistente, não só na tela vazia: a mensagem de boas-vindas some
-            depois da primeira pergunta, e o escopo da demo precisa continuar
-            visível pra quem chegou no meio da conversa. */}
-        <p className="mt-2 text-center text-[11px] leading-relaxed text-slate/60">
-          {agentVoice.basis}
-        </p>
       </div>
     </div>
   )

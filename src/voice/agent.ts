@@ -1,22 +1,24 @@
-// A voz do agente nesta demo pública — mesma seca/precisa de voice/mono.ts.
-// A base é fixa e única (lib/collection.ts): o currículo. O visitante não
-// escolhe nem cria nada, então o que precisa ficar claro é o ESCOPO — sobre o
-// que dá pra perguntar, e que a resposta sai de um documento, não do modelo.
-
+// A voz do agente nesta demo pública. Diais do brandbook: humor 60,
+// franqueza 90, verbosidade 25 — o teto de verbosidade é o que dita o
+// tamanho daqui. Frase curta, ponto final, sem parágrafo de boas-vindas.
+//
+// A base é fixa (lib/collection.ts) e o visitante não escolhe nem cria nada,
+// então basta nomear o assunto — nada de explicar a arquitetura do RAG pra
+// quem só quer perguntar. Cada superfície diz uma coisa, sem repetir a outra:
+//   welcome — o assunto e onde ele acaba (tela vazia, some na 1ª pergunta)
+//   help    — só a mecânica que não cabe no welcome
 export const agentVoice = {
   welcome:
-    'Converso sobre um documento só: o currículo do Jansen Alves Raimundo.\n' +
-    'Pergunte sobre experiência, projetos, stack ou formação — a resposta sai do PDF indexado, com o trecho usado junto.',
-  helpHint: 'primeira vez? digite /help.',
-  basis: 'base: currículo de Jansen Alves Raimundo — respostas fora dele o agente não inventa',
+    'Aqui você conversa com o currículo do Jansen Alves Raimundo.\n' +
+    'Experiência, stack, projetos, formação. O que não estiver lá, eu digo que não sei.',
+  helpHint: 'nunca conversou com um currículo? /help',
   help: [
-    'Demo pública de RAG, sem login. A base de conhecimento é um documento só: o currículo do Jansen Alves Raimundo.',
+    'Demo de RAG. Sem login, sem cadastro, sem newsletter.',
     '',
     '1. pergunte em português — "onde ele trabalhou?", "ele usa AWS?", "quando se forma?"',
-    '2. a resposta vem do PDF indexado; se a informação não estiver lá, o agente diz que não sabe em vez de chutar.',
-    '3. abra as referências abaixo de cada resposta pra ver de quantos trechos ela saiu.',
-    '4. "novo chat" (sidebar) — abre uma thread nova, isolada das outras.',
-    '5. recarregar a página não perde a conversa — ela vive no localStorage deste navegador.',
+    '2. abaixo de cada resposta ficam os trechos que a sustentam. desconfie à vontade.',
+    '3. "novo chat" na sidebar — thread limpa, sem contaminar as outras.',
+    '4. recarregar não perde nada: a conversa mora no localStorage deste navegador.',
   ].join('\n'),
   backendDown: 'Não consegui responder. O back-end engasgou no meio do raciocínio.',
   collectionMissing: 'Não consegui responder — a base do currículo não está acessível agora.',
