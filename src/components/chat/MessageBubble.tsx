@@ -1,6 +1,7 @@
 import type { AgentMessage } from '../../lib/agentStorage'
 import { MonoBadge } from '../mono/MonoBadge'
 import { CommandText } from './CommandText'
+import { Markdown } from './Markdown'
 import { SourceReferences } from './SourceReferences'
 
 interface MessageBubbleProps {
@@ -25,14 +26,17 @@ export function MessageBubble({ message, withCursor }: MessageBubbleProps) {
       <MonoBadge size={26} />
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-0.5">
         <span className="text-[10px] uppercase tracking-[0.22em] text-slate">mono</span>
-        <p
-          className={`max-w-[60ch] whitespace-pre-wrap text-[15px] leading-relaxed tracking-[-0.01em] ${
+        <div
+          className={`max-w-[60ch] text-[15px] leading-relaxed tracking-[-0.01em] ${
             message.error ? 'text-ember' : 'text-bone'
           }`}
         >
-          <CommandText text={message.content} />
+          {/* div, não p: markdown gera blocos (p, ul, pre) e bloco dentro de
+              <p> é HTML inválido — o navegador fecha o parágrafo sozinho e a
+              árvore do DOM sai diferente do que o React espera. */}
+          <Markdown streaming={withCursor}>{message.content}</Markdown>
           {withCursor && <span className="mono-cursor" />}
-        </p>
+        </div>
         {message.sources && message.sources.length > 0 && (
           <SourceReferences sources={message.sources} />
         )}
