@@ -9,6 +9,9 @@ export interface ChatRequest {
 
 export interface SourceInfo {
   source: string
+  /** Nome legível do documento. Opcional porque conversas salvas no
+   *  localStorage antes deste campo existir não o têm. */
+  title?: string
   chunk_ids: string[]
 }
 

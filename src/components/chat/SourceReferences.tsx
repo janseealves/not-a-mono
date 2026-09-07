@@ -4,6 +4,14 @@ interface SourceReferencesProps {
   sources: SourceInfo[]
 }
 
+// O que mostrar na citação: o título do documento (nome do arquivo enviado)
+// quando existe, senão o endereço encurtado. Sem isso, um PDF do object store
+// apareceria como "documents/b0176053-fa5d-49ab-8a95-db1175fd89d5.pdf" — o
+// backend só tem um uuid como nome do objeto.
+function label({ title, source }: SourceInfo): string {
+  return title && title !== source ? title : docName(source)
+}
+
 function docName(source: string): string {
   try {
     const url = new URL(source)
@@ -32,7 +40,7 @@ export function SourceReferences({ sources }: SourceReferencesProps) {
         {sources.map((s) => (
           <div key={s.source} className="flex items-center justify-between gap-2 text-[11px]">
             <span title={s.source} className="truncate text-slate">
-              {docName(s.source)}
+              {label(s)}
             </span>
             <span className="shrink-0 tabular-nums text-slate/60">{s.chunk_ids.length}</span>
           </div>

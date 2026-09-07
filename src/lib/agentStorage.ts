@@ -79,15 +79,21 @@ export function mergeSources(
   prev: SourceInfo[] | undefined,
   incoming: SourceInfo[],
 ): SourceInfo[] {
-  const bySource = new Map<string, Set<string>>()
-  for (const s of prev ?? []) bySource.set(s.source, new Set(s.chunk_ids))
-  for (const s of incoming) {
-    const chunkIds = bySource.get(s.source) ?? new Set<string>()
-    for (const id of s.chunk_ids) chunkIds.add(id)
-    bySource.set(s.source, chunkIds)
+  const bySource = new Map<string, { title?: string; chunkIds: Set<string> }>()
+  for (const s of [...(prev ?? []), ...incoming]) {
+    const entry = bySource.get(s.source)
+    if (!entry) {
+      bySource.set(s.source, { title: s.title, chunkIds: new Set(s.chunk_ids) })
+      continue
+    }
+    // Uma resposta retomada do localStorage pode não ter título; se um evento
+    // novo trouxer um para o mesmo documento, aproveita.
+    entry.title ??= s.title
+    for (const id of s.chunk_ids) entry.chunkIds.add(id)
   }
-  return [...bySource.entries()].map(([source, chunkIds]) => ({
+  return [...bySource.entries()].map(([source, { title, chunkIds }]) => ({
     source,
+    title,
     chunk_ids: [...chunkIds],
   }))
 }

@@ -13,7 +13,6 @@ interface UseAgentChatParams {
   addMessage: (message: AgentMessage) => void
   syncMessage: (id: string, patch: Partial<AgentMessage>) => void
   touchThread: (id: string, patch?: Partial<Pick<Thread, 'title'>>) => void
-  onCollectionMissing: () => void
 }
 
 export function useAgentChat({
@@ -23,7 +22,6 @@ export function useAgentChat({
   addMessage,
   syncMessage,
   touchThread,
-  onCollectionMissing,
 }: UseAgentChatParams) {
   const [pending, setPending] = useState(false)
 
@@ -49,13 +47,12 @@ export function useAgentChat({
         threadId,
         agentMessageId,
         events,
-        // A rota resolve collection_id antes de abrir o stream — um 404 aqui
-        // significa que a collection guardada no navegador não existe mais
-        // (ex.: limpeza periódica no backend). Provisiona uma nova pra
-        // próxima mensagem já funcionar sem intervenção manual.
+        // A rota resolve collection_id antes de abrir o stream. Com a base
+        // fixa, um 404 aqui é configuração errada (VITE_COLLECTION_ID) ou
+        // currículo não indexado — nada que o visitante resolva tentando de
+        // novo, então só informa em vez de reprovisionar.
         (err) => {
           if (err instanceof ApiError && err.status === 404) {
-            onCollectionMissing()
             return agentVoice.collectionMissing
           }
           return agentVoice.backendDown
@@ -69,7 +66,7 @@ export function useAgentChat({
       )
       setPending(false)
     },
-    [threadId, collectionId, pending, messageCount, addMessage, syncMessage, touchThread, onCollectionMissing],
+    [threadId, collectionId, pending, messageCount, addMessage, syncMessage, touchThread],
   )
 
   return { send, pending }
