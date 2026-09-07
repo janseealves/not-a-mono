@@ -1,10 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="mono">
-  <!-- o selo do MONO: figura vazada sobre campo laranja — a laje em repouso (monolito) -->
+  <!-- o selo do MONO: figura vazada sobre campo laranja — a laje articulada,
+       as 4 juntas dobradas nos 16° cheios. Geometria gerada pelo mesmo
+       algoritmo de src/components/mono/MonoSlab.tsx com t=1: cada segmento
+       gira em torno da própria borda de cima (origin-top), em direções
+       alternadas, e o conjunto fica centrado na vertical. -->
   <rect width="64" height="64" rx="14.1" fill="#ea580c"/>
   <g fill="#fafafa">
-    <rect x="22.4" y="10.5" width="19.2" height="9.088"/>
-    <rect x="22.4" y="21.25" width="19.2" height="9.088"/>
-    <rect x="22.4" y="32" width="19.2" height="9.088"/>
-    <rect x="22.4" y="42.75" width="19.2" height="9.088"/>
+    <rect x="22.4" y="11.329" width="19.2" height="9.088" transform="rotate(-16 32 11.329)"/>
+    <rect x="25.364" y="21.665" width="19.2" height="9.088" transform="rotate(16 34.964 21.665)"/>
+    <rect x="22.4" y="32" width="19.2" height="9.088" transform="rotate(-16 32 32)"/>
+    <rect x="25.364" y="42.335" width="19.2" height="9.088" transform="rotate(16 34.964 42.335)"/>
   </g>
 </svg>
