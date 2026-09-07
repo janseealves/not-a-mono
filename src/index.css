@@ -76,6 +76,141 @@
   }
 }
 
+/* ── markdown da fala do agente (components/chat/Markdown.tsx) ──
+   Escrito à mão em vez de @tailwindcss/typography: o `prose` traz a própria
+   escala de cor e tipografia, e sobrescrever tudo isso para caber na paleta
+   do mono dava mais linhas do que definir só o que o modelo realmente emite. */
+.mono-md > *:first-child {
+  margin-top: 0;
+}
+
+.mono-md > *:last-child {
+  margin-bottom: 0;
+}
+
+.mono-md p,
+.mono-md ul,
+.mono-md ol,
+.mono-md pre,
+.mono-md blockquote,
+.mono-md table {
+  margin: 0.75em 0;
+}
+
+/* uuid e URL longa não podem esticar a coluna */
+.mono-md p,
+.mono-md li {
+  overflow-wrap: anywhere;
+}
+
+.mono-md strong {
+  font-weight: 600;
+  color: var(--color-bone);
+}
+
+.mono-md em {
+  font-style: italic;
+}
+
+.mono-md ul,
+.mono-md ol {
+  padding-left: 1.35em;
+}
+
+.mono-md ul {
+  list-style: disc;
+}
+
+.mono-md ol {
+  list-style: decimal;
+}
+
+.mono-md li {
+  margin: 0.2em 0;
+}
+
+.mono-md li::marker {
+  color: var(--color-amber);
+}
+
+/* Títulos: o modelo às vezes solta ## no meio da resposta. Mesmo corpo do
+   texto, só com peso — hierarquia de artigo aqui viraria ruído. */
+.mono-md h1,
+.mono-md h2,
+.mono-md h3,
+.mono-md h4 {
+  margin: 1.1em 0 0.5em;
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--color-bone);
+}
+
+.mono-md code {
+  border-radius: 2px;
+  background: var(--color-surface);
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+  color: var(--color-ember);
+}
+
+.mono-md pre {
+  overflow-x: auto;
+  border: 1px solid var(--color-hair);
+  border-radius: 4px;
+  background: var(--color-surface);
+  padding: 0.75em 0.9em;
+}
+
+.mono-md pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.86em;
+  color: var(--color-bone);
+}
+
+.mono-md a {
+  color: var(--color-amber);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mono-md blockquote {
+  border-left: 2px solid var(--color-hair);
+  padding-left: 0.9em;
+  color: var(--color-slate);
+}
+
+.mono-md hr {
+  margin: 1.2em 0;
+  border: 0;
+  border-top: 1px solid var(--color-hair);
+}
+
+/* Tabela do GFM: rola dentro da própria caixa, nunca empurra a página. */
+.mono-md table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+
+.mono-md th,
+.mono-md td {
+  border: 1px solid var(--color-hair);
+  padding: 0.35em 0.6em;
+  text-align: left;
+}
+
+.mono-md th {
+  font-weight: 600;
+}
+
+/* Enquanto streama, o último bloco vira inline pro cursor ficar na linha do
+   texto em vez de pular pra linha de baixo a cada token. */
+.mono-md--streaming > *:last-child {
+  display: inline;
+}
+
 /* range input no estilo do console do brandbook */
 input[type='range'] {
   -webkit-appearance: none;
