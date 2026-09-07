@@ -10,9 +10,9 @@ import type { ThreadsApi } from '../components/shell/AppShell'
 import { HealthDot } from '../components/shell/HealthDot'
 import { SidebarMenuButton } from '../components/shell/SidebarShell'
 import { useAgentChat } from '../hooks/useAgentChat'
-import { useCollection } from '../hooks/useCollection'
 import { useHealth } from '../hooks/useHealth'
 import { useThreadMessages } from '../hooks/useThreadMessages'
+import { COLLECTION_ID } from '../lib/collection'
 import { fakeStream } from '../lib/fakeStream'
 import { agentVoice } from '../voice/agent'
 
@@ -22,18 +22,16 @@ export function AgentPage() {
   const thread = threads.find((t) => t.id === activeThreadId)
 
   const { online } = useHealth()
-  const { collectionId, invalidate: invalidateCollection } = useCollection()
   const { messages, streamingMessageId, addMessage, syncMessage, commitMessage } = useThreadMessages(
     thread?.id ?? null,
   )
   const { send, pending } = useAgentChat({
     threadId: thread?.id ?? null,
-    collectionId,
+    collectionId: COLLECTION_ID,
     messageCount: messages.length,
     addMessage,
     syncMessage,
     touchThread: threadsApi.touchThread,
-    onCollectionMissing: invalidateCollection,
   })
   // Comando local (/help) não bate no backend — encena o mesmo streaming.
   const [commandPending, setCommandPending] = useState(false)
@@ -133,6 +131,12 @@ export function AgentPage() {
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-5 pt-1">
         <Composer disabled={disabled} onSubmit={handleSubmit} />
+        {/* Persistente, não só na tela vazia: a mensagem de boas-vindas some
+            depois da primeira pergunta, e o escopo da demo precisa continuar
+            visível pra quem chegou no meio da conversa. */}
+        <p className="mt-2 text-center text-[11px] leading-relaxed text-slate/60">
+          {agentVoice.basis}
+        </p>
       </div>
     </div>
   )
